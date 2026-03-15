@@ -2,470 +2,353 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="description" content="PeaceOut.sg — Singapore's afterlife pre-planning tool. Are you ready to die?">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#1A1A2E">
-<meta property="og:title" content="PeaceOut.sg — Are you ready to die?">
-<meta property="og:description" content="Find out how prepared your family really is. Takes 5 minutes.">
-<meta property="og:image" content="/og-image.png">
-<title>PeaceOut.sg — Are you ready to die?</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231A1A2E'/><text y='.9em' font-size='70' x='10'>P.</text></svg>">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>PeaceOut.sg</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231A1A2E'/><text y='.85em' font-size='68' x='10' fill='%23C9A84C' font-weight='bold'>P.</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<!-- Supabase JS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* ============================================================
-   PEACEOUT.SG — FULL APP STYLESHEET
-   Two modes: ?mode=agent (agent portal) | default (client view)
-   ============================================================ */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --gold:#C9A84C;--gold-l:#F5EDD6;--gold-d:#8B6A1E;
-  --ink:#0F0F0F;--ink2:#1A1A2E;--ink3:#4A4A5A;
-  --ash:#F8F7F4;--ash2:#EFEDE8;--ash3:#DDD9D0;
-  --jade:#1D7A5F;--jade-l:#E3F5EE;
-  --coral:#C44B3A;--coral-l:#FAEAE8;
-  --plum:#4A2C6E;--plum-l:#EDE8F5;
-  --sky:#1A6B9E;--sky-l:#E5F0FA;
+  --g:#C9A84C;--gl:#F5EDD6;--gd:#8B6A1E;
+  --k:#0F0F0F;--k2:#1A1A2E;--k3:#4A4A5A;
+  --a:#F8F7F4;--a2:#EFEDE8;--a3:#DDD9D0;
+  --j:#1D7A5F;--jl:#E3F5EE;
+  --r:#C44B3A;--rl:#FAEAE8;
   --W:#FFFFFF;
-  --fh:'Syne',sans-serif;
-  --fb:'DM Sans',sans-serif;
-  --r:10px;--r2:18px;
-  --max:480px;
+  --fh:'Syne',sans-serif;--fb:'DM Sans',sans-serif;
+  --br:10px;--br2:18px;--br3:24px;
 }
-html,body{height:100%;overflow-x:hidden;background:var(--ink2)}
-body{font-family:var(--fb);color:var(--ink)}
-
-/* ---- APP SHELL ---- */
-#app{
-  max-width:var(--max);
-  margin:0 auto;
-  min-height:100vh;
-  background:var(--W);
-  display:flex;
-  flex-direction:column;
-  position:relative;
-}
-
-/* ---- VIEWS ---- */
+html{height:100%;background:var(--k2)}
+body{font-family:var(--fb);color:var(--k);background:var(--a);overflow-x:hidden}
+#app{max-width:430px;margin:0 auto;min-height:100vh;background:var(--W);display:flex;flex-direction:column}
 .view{display:none;flex-direction:column;min-height:100vh}
 .view.active{display:flex}
 
-/* ============================================================
-   LOGIN VIEW
-   ============================================================ */
-#view-login{
-  background:var(--ink2);
-  align-items:center;
-  justify-content:center;
-  padding:24px;
-  min-height:100vh;
-}
-.login-box{
-  background:var(--W);
-  border-radius:24px;
-  padding:36px 28px;
-  width:100%;
-  max-width:400px;
-}
-.login-logo{text-align:center;margin-bottom:28px}
-.login-mark{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:54px;height:54px;background:var(--gold);border-radius:14px;
-  font-family:var(--fh);font-weight:800;font-size:22px;color:var(--ink2);
-  margin-bottom:12px;
-}
-.login-brand{font-family:var(--fh);font-size:26px;font-weight:800;color:var(--ink)}
-.login-tag{font-size:12px;color:var(--gold);font-style:italic;margin-top:4px}
-.login-tabs{display:flex;background:var(--ash2);border-radius:var(--r);padding:3px;margin-bottom:22px;gap:3px}
-.login-tab{flex:1;padding:9px;text-align:center;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;color:var(--ink3);transition:all 0.15s}
-.login-tab.active{background:var(--W);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,0.09)}
-.form-lbl{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:5px;display:block}
-.form-inp{
-  width:100%;padding:12px 14px;border:1.5px solid var(--ash3);
-  border-radius:var(--r);font-family:var(--fb);font-size:14px;color:var(--ink);
-  outline:none;background:var(--W);transition:border-color 0.15s;margin-bottom:14px;
-}
-.form-inp:focus{border-color:var(--gold)}
-.login-note{font-size:12px;color:var(--ink3);opacity:0.5;text-align:center;margin-top:14px;line-height:1.55}
-.login-client-info{text-align:center;padding:16px 0}
-.login-client-info .big-icon{font-size:36px;margin-bottom:14px}
-.login-client-info p{font-size:13px;color:var(--ink3);line-height:1.65;margin-bottom:18px}
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 18px;border-radius:var(--br);font-family:var(--fb);font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
+.b-gold{background:var(--g);color:var(--k2);font-weight:700}.b-gold:hover,.b-gold:disabled{background:var(--gd);color:#fff}
+.b-ghost{background:transparent;color:var(--k3);border:1.5px solid var(--a3)}.b-ghost:hover{background:var(--a2)}
+.b-coral{background:var(--r);color:#fff}
+.b-jade{background:var(--j);color:#fff}
+.b-plum{background:#4A2C6E;color:#fff}
+.b-w{width:100%}
+.b-sm{padding:7px 12px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 
-/* ============================================================
-   SHARED BUTTON STYLES
-   ============================================================ */
-.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:var(--r);font-family:var(--fb);font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;text-align:center;justify-content:center}
-.btn-gold{background:var(--gold);color:var(--ink2);font-weight:700}
-.btn-gold:hover{background:var(--gold-d);color:#fff}
-.btn-ghost{background:transparent;color:var(--ink3);border:1.5px solid var(--ash3)}
-.btn-ghost:hover{background:var(--ash2)}
-.btn-jade{background:var(--jade);color:#fff}
-.btn-coral{background:var(--coral);color:#fff}
-.btn-w{width:100%}
-.btn-wa{background:#25D366;color:#fff;font-weight:700}
-.btn-wa:hover{background:#1DA857}
+/* ── FORMS ── */
+.fg{margin-bottom:14px}
+.lbl{display:block;font-size:13px;font-weight:500;color:var(--k);margin-bottom:5px}
+.req{color:var(--r);margin-left:2px}
+.inp,.sel{width:100%;padding:11px 13px;border:1.5px solid var(--a3);border-radius:var(--br);font-family:var(--fb);font-size:14px;color:var(--k);background:var(--W);outline:none;transition:border-color .15s}
+.inp:focus,.sel:focus{border-color:var(--g)}
+.inp.err{border-color:var(--r)}
+.hint{font-size:11px;color:var(--k3);opacity:.5;margin-top:4px;line-height:1.4}
+.err-msg{font-size:12px;color:var(--r);margin-top:4px}
 
-/* ============================================================
-   AGENT PORTAL
-   ============================================================ */
-#view-agent{flex-direction:row;max-width:100%;background:var(--ash)}
+/* ── ALERTS ── */
+.al{display:flex;align-items:flex-start;gap:10px;border-radius:var(--br);padding:11px 14px;margin-bottom:14px;font-size:13px;line-height:1.5}
+.a-g{background:var(--gl);border:1.5px solid rgba(201,168,76,.3);color:var(--gd)}
+.a-j{background:var(--jl);border:1.5px solid rgba(29,122,95,.2);color:var(--j)}
+.a-r{background:var(--rl);border:1.5px solid rgba(196,75,58,.2);color:var(--r)}
 
-.agent-sidebar{
-  width:240px;background:var(--ink2);flex-shrink:0;
-  display:flex;flex-direction:column;
-  min-height:100vh;overflow-y:auto;
-  position:sticky;top:0;height:100vh;
-}
-@media(max-width:768px){
-  .agent-sidebar{display:none}
-  .agent-sidebar.mob-open{display:flex;position:fixed;left:0;top:0;bottom:0;z-index:200;width:260px}
-}
-.agent-main{flex:1;overflow-y:auto;display:flex;flex-direction:column;min-height:100vh}
+/* ── TOAST ── */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--k2);color:#fff;font-size:13px;font-weight:500;padding:10px 20px;border-radius:30px;z-index:9999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;max-width:340px;text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
-.brand-block{padding:20px 16px 14px;border-bottom:1px solid rgba(255,255,255,0.07)}
-.brand-row{display:flex;align-items:center;gap:9px;margin-bottom:4px}
-.bmark{width:32px;height:32px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:800;font-size:13px;color:var(--ink2);flex-shrink:0}
-.bname{font-family:var(--fh);font-size:17px;font-weight:800;color:#fff}
-.btag{font-size:10px;color:var(--gold);font-style:italic;margin-left:41px}
-.bagency{margin-top:9px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06);font-size:11px;color:rgba(255,255,255,0.32)}
-.bagency strong{color:rgba(255,255,255,0.58);display:block;font-size:12px;margin-bottom:1px}
+/* ── SPINNER ── */
+.spin{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-.anav{padding:10px 8px;flex:1}
-.ans{font-size:10px;color:rgba(255,255,255,0.22);letter-spacing:1.2px;text-transform:uppercase;padding:9px 10px 4px;margin-top:4px}
-.ani{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r);cursor:pointer;color:rgba(255,255,255,0.48);font-size:13px;transition:all 0.15s;margin-bottom:1px;position:relative}
-.ani:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.85)}
-.ani.on{background:rgba(201,168,76,0.15);color:var(--gold);font-weight:500}
-.ani.on::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:16px;background:var(--gold);border-radius:0 2px 2px 0}
-.anb{margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--coral);color:#fff}
-.anb.g{background:var(--jade)}
+/* ── LOGIN VIEW ── */
+#view-auth{background:var(--k2);align-items:center;justify-content:center;padding:24px}
+.auth-box{background:var(--W);border-radius:var(--br3);padding:36px 28px;width:100%;max-width:400px}
+.auth-logo{text-align:center;margin-bottom:24px}
+.amark{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;background:var(--g);border-radius:14px;font-family:var(--fh);font-weight:800;font-size:22px;color:var(--k2);margin-bottom:12px}
+.abrand{font-family:var(--fh);font-size:26px;font-weight:800;color:var(--k)}
+.atag{font-size:12px;color:var(--g);font-style:italic;margin-top:3px}
+.auth-tabs{display:flex;background:var(--a2);border-radius:var(--br);padding:3px;margin-bottom:22px;gap:3px}
+.auth-tab{flex:1;padding:9px;text-align:center;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;color:var(--k3);transition:all .15s}
+.auth-tab.on{background:var(--W);color:var(--k);box-shadow:0 1px 4px rgba(0,0,0,.09)}
+.mode-tabs{display:flex;gap:8px;margin-bottom:20px}
+.mode-tab{flex:1;padding:10px;text-align:center;border-radius:var(--br);font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid var(--a3);color:var(--k3);transition:all .15s}
+.mode-tab.on{border-color:var(--g);background:var(--gl);color:var(--gd);font-weight:700}
+.divider-text{text-align:center;font-size:12px;color:var(--k3);opacity:.45;margin:14px 0;position:relative}
+.divider-text::before,.divider-text::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--a3)}
+.divider-text::before{left:0}.divider-text::after{right:0}
+.back-link{font-size:13px;color:var(--g);cursor:pointer;text-align:center;margin-top:14px;display:block}
+.back-link:hover{text-decoration:underline}
 
-.agent-foot{padding:12px;border-top:1px solid rgba(255,255,255,0.07)}
-.cons-chip{display:flex;align-items:center;gap:9px;padding:9px 10px;background:rgba(255,255,255,0.05);border-radius:var(--r)}
-.cav{width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--ink2);flex-shrink:0}
-.cname{font-size:13px;color:rgba(255,255,255,0.82);font-weight:500}
-.ccode{font-size:11px;color:rgba(255,255,255,0.3);margin-top:1px}
-.logout-lnk{font-size:11px;color:rgba(255,255,255,0.28);cursor:pointer;margin-left:auto;padding:4px 8px;border-radius:6px;transition:all 0.15s}
-.logout-lnk:hover{color:var(--coral)}
-
-/* Agent screens */
-.ascreen{display:none;flex:1;flex-direction:column}
-.ascreen.on{display:flex}
-
-.topbar{padding:16px 24px;background:var(--W);border-bottom:1px solid var(--ash3);display:flex;align-items:center;gap:10px;flex-shrink:0}
-.pt{font-family:var(--fh);font-size:18px;font-weight:700;color:var(--ink)}
-.ps{font-size:12px;color:var(--ink3);margin-top:2px;opacity:0.6}
-.tr{margin-left:auto;display:flex;gap:8px;align-items:center}
-.acontent{padding:22px 24px;flex:1;overflow-y:auto}
-
-/* Stat cards */
+/* ── AGENT PORTAL ── */
+#view-agent{flex-direction:row;max-width:100%;background:var(--a);min-height:100vh}
+.sidebar{width:240px;background:var(--k2);flex-shrink:0;display:flex;flex-direction:column;height:100vh;position:sticky;top:0;overflow-y:auto}
+.sb-brand{padding:20px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.sb-brand-row{display:flex;align-items:center;gap:9px;margin-bottom:4px}
+.sb-mark{width:32px;height:32px;background:var(--g);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:800;font-size:13px;color:var(--k2)}
+.sb-name{font-family:var(--fh);font-size:17px;font-weight:800;color:#fff}
+.sb-tag{font-size:10px;color:var(--g);font-style:italic;margin-left:41px}
+.sb-agency{margin-top:9px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);font-size:11px;color:rgba(255,255,255,.32)}
+.sb-agency strong{color:rgba(255,255,255,.58);display:block;font-size:12px;margin-bottom:1px}
+.sb-nav{padding:10px 8px;flex:1}
+.sb-section{font-size:10px;color:rgba(255,255,255,.22);letter-spacing:1.2px;text-transform:uppercase;padding:9px 10px 4px;margin-top:4px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--br);cursor:pointer;color:rgba(255,255,255,.48);font-size:13px;transition:all .15s;margin-bottom:1px;position:relative}
+.sb-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85)}
+.sb-item.on{background:rgba(201,168,76,.15);color:var(--g);font-weight:500}
+.sb-item.on::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:16px;background:var(--g);border-radius:0 2px 2px 0}
+.sb-badge{margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--r);color:#fff}
+.sb-badge.g{background:var(--j)}
+.sb-foot{padding:12px;border-top:1px solid rgba(255,255,255,.07)}
+.agent-chip{display:flex;align-items:center;gap:9px;padding:9px 10px;background:rgba(255,255,255,.05);border-radius:var(--br)}
+.agent-av{width:32px;height:32px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--k2);flex-shrink:0}
+.agent-name{font-size:13px;color:rgba(255,255,255,.82);font-weight:500}
+.agent-code{font-size:11px;color:rgba(255,255,255,.3);margin-top:1px}
+.logout-btn{font-size:11px;color:rgba(255,255,255,.28);cursor:pointer;margin-left:auto;padding:4px 8px;border-radius:6px}
+.logout-btn:hover{color:var(--r)}
+.agent-main{flex:1;overflow-y:auto;min-height:100vh}
+.ascreen{display:none}
+.ascreen.on{display:block}
+.atb{padding:16px 22px;background:var(--W);border-bottom:1px solid var(--a3);display:flex;align-items:center;gap:10px}
+.at-title{font-family:var(--fh);font-size:18px;font-weight:700;color:var(--k)}
+.at-sub{font-size:12px;color:var(--k3);margin-top:2px;opacity:.6}
+.at-right{margin-left:auto;display:flex;gap:8px}
+.ac{padding:20px 22px}
 .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
-@media(max-width:900px){.stat-grid{grid-template-columns:repeat(2,1fr)}}
-.stat-card{background:var(--W);border-radius:var(--r2);border:1.5px solid var(--ash3);padding:16px}
-.sl{font-size:12px;color:var(--ink3);opacity:0.5;margin-bottom:4px}
-.sv{font-family:var(--fh);font-size:22px;font-weight:800;color:var(--ink)}
-.sc{font-size:12px;margin-top:3px}
-.sc.up{color:var(--jade)}
-
-/* Alert */
-.alert{display:flex;align-items:flex-start;gap:10px;border-radius:var(--r);padding:11px 14px;margin-bottom:16px;font-size:13px;line-height:1.5}
-.alert.gold{background:var(--gold-l);border:1.5px solid rgba(201,168,76,0.3);color:var(--gold-d)}
-.alert.jade{background:var(--jade-l);border:1.5px solid rgba(29,122,95,0.25);color:var(--jade)}
-.ac{margin-left:auto;cursor:pointer;opacity:0.4;font-size:14px;flex-shrink:0}
-
-/* Cards grid */
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
-.card{background:var(--W);border-radius:var(--r2);padding:18px;border:1.5px solid var(--ash3);cursor:pointer;transition:all 0.18s}
-.card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,0.07)}
-.card-ico{font-size:24px;margin-bottom:10px}
-.card-t{font-family:var(--fh);font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px}
-.card-d{font-size:12px;color:var(--ink3);opacity:0.6;line-height:1.4}
-
-/* Share panel */
-.share-panel{background:var(--ink2);border-radius:var(--r2);padding:22px;margin-bottom:18px}
-.sp-t{font-family:var(--fh);font-size:15px;font-weight:700;color:#fff;margin-bottom:4px}
-.sp-s{font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:16px}
-.link-box{background:rgba(255,255,255,0.07);border:1.5px solid rgba(201,168,76,0.3);border-radius:var(--r);padding:11px 14px;display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.link-url{flex:1;font-size:12px;color:rgba(255,255,255,0.5);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sp-note{font-size:11px;color:rgba(255,255,255,0.22);margin-top:10px;line-height:1.45}
-.share-btns{display:flex;gap:8px;flex-wrap:wrap}
-
-/* Tag / pill */
-.tag{display:inline-flex;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
-.tag.red{background:var(--coral-l);color:var(--coral)}
-.tag.gold{background:var(--gold-l);color:var(--gold-d)}
-.tag.green{background:var(--jade-l);color:var(--jade)}
-.tag.gray{background:var(--ash2);color:var(--ink3)}
-.pill{display:inline-flex;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
-.pill.red{background:var(--coral-l);color:var(--coral)}
-.pill.gold{background:var(--gold-l);color:var(--gold-d)}
-.pill.green{background:var(--jade-l);color:var(--jade)}
-.pill.gray{background:var(--ash2);color:var(--ink3)}
-
-/* Table */
-.tw{background:var(--W);border-radius:var(--r2);border:1.5px solid var(--ash3);overflow:hidden}
-.tw-head{padding:13px 18px;border-bottom:1px solid var(--ash2);display:flex;align-items:center;justify-content:space-between}
-.tw-t{font-family:var(--fh);font-size:14px;font-weight:700}
-.t-scroll{overflow-x:auto}
+.stat-card{background:var(--W);border-radius:var(--br2);border:1.5px solid var(--a3);padding:16px}
+.stat-lbl{font-size:12px;color:var(--k3);opacity:.5;margin-bottom:4px}
+.stat-val{font-family:var(--fh);font-size:22px;font-weight:800;color:var(--k)}
+.stat-ch{font-size:12px;margin-top:3px;color:var(--j)}
+.tw{background:var(--W);border-radius:var(--br2);border:1.5px solid var(--a3);overflow:hidden;margin-bottom:16px}
+.tw-head{padding:13px 18px;border-bottom:1px solid var(--a2);display:flex;align-items:center;justify-content:space-between}
+.tw-title{font-family:var(--fh);font-size:14px;font-weight:700}
+.ts{overflow-x:auto}
 table{width:100%;border-collapse:collapse}
-th{padding:9px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--ink3);opacity:0.5;letter-spacing:0.5px;text-transform:uppercase;background:var(--ash);white-space:nowrap}
-td{padding:11px 12px;font-size:13px;color:var(--ink);border-bottom:1px solid var(--ash2)}
+th{padding:9px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--k3);opacity:.5;letter-spacing:.5px;text-transform:uppercase;background:var(--a);white-space:nowrap}
+td{padding:11px 12px;font-size:13px;color:var(--k);border-bottom:1px solid var(--a2)}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:var(--ash)}
+tr:hover td{background:var(--a)}
+.pill{display:inline-flex;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.p-red{background:var(--rl);color:var(--r)}
+.p-gold{background:var(--gl);color:var(--gd)}
+.p-green{background:var(--jl);color:var(--j)}
+.p-gray{background:var(--a2);color:var(--k3)}
+.p-plum{background:#EDE8F5;color:#4A2C6E}
+.share-panel{background:var(--k2);border-radius:var(--br2);padding:22px;margin-bottom:18px}
+.sp-title{font-family:var(--fh);font-size:15px;font-weight:700;color:#fff;margin-bottom:4px}
+.sp-sub{font-size:12px;color:rgba(255,255,255,.38);margin-bottom:16px}
+.link-box{background:rgba(255,255,255,.07);border:1.5px solid rgba(201,168,76,.3);border-radius:var(--br);padding:11px 14px;display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.link-url{flex:1;font-size:12px;color:rgba(255,255,255,.5);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp-note{font-size:11px;color:rgba(255,255,255,.22);margin-top:10px;line-height:1.4}
 
-/* Priority items */
-.p-items{display:flex;flex-direction:column;gap:9px}
-.p-item{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:var(--r);padding:13px}
-.p-item.top{background:rgba(201,168,76,0.12);border:1.5px solid rgba(201,168,76,0.25)}
-.p-rank{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;flex-shrink:0}
-.p-rank.gold{background:var(--gold);color:var(--ink2)}
-.p-rank.sil{background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.7)}
-.p-info{flex:1}
-.p-name{font-size:13px;font-weight:600;color:#fff;margin-bottom:2px}
-.p-det{font-size:11px;color:rgba(255,255,255,0.4)}
-.p-status{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;flex-shrink:0}
-.p-status.miss{background:var(--coral);color:#fff}
-.p-status.done{background:var(--jade);color:#fff}
-.p-status.part{background:var(--gold);color:var(--ink2)}
-.p-cta{font-size:12px;font-weight:600;color:var(--gold);cursor:pointer;flex-shrink:0;white-space:nowrap;padding-left:8px}
+/* ── CLIENT VIEW ── */
+#view-client{max-width:430px;background:var(--W)}
+.client-nav{background:var(--k2);padding:14px 18px 0;flex-shrink:0;position:sticky;top:0;z-index:90}
+.cn-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cn-brand{display:flex;align-items:center;gap:9px}
+.cn-mark{width:30px;height:30px;background:var(--g);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:800;font-size:13px;color:var(--k2)}
+.cn-name{font-family:var(--fh);font-size:16px;font-weight:800;color:#fff}
+.cn-tag{font-size:9px;color:var(--g);font-style:italic}
+.agent-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);border-radius:30px;padding:5px 10px 5px 5px;cursor:pointer}
+.ap-av{width:22px;height:22px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--k2)}
+.ap-name{font-size:11px;color:rgba(255,255,255,.65)}
+.tabbar{display:flex;overflow-x:auto;scrollbar-width:none;gap:1px}
+.tabbar::-webkit-scrollbar{display:none}
+.ctab{padding:10px 11px;font-size:12px;color:rgba(255,255,255,.4);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.ctab.on{color:var(--g);border-bottom-color:var(--g);font-weight:500}
+.sbody{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:16px}
+.scr{display:none}
+.scr.on{display:block}
 
-/* ============================================================
-   CLIENT VIEW
-   ============================================================ */
-#view-client{
-  max-width:var(--max);
-  background:var(--W);
-  flex-direction:column;
-}
-
-.client-nav{
-  background:var(--ink2);
-  padding:14px 18px 0;
-  flex-shrink:0;
-  position:sticky;top:0;z-index:50;
-}
-.cnav-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.cbrand{display:flex;align-items:center;gap:9px}
-.cbmark{width:30px;height:30px;background:var(--gold);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:800;font-size:12px;color:var(--ink2)}
-.cbname{font-family:var(--fh);font-size:16px;font-weight:800;color:#fff}
-.cbtag{font-size:9px;color:var(--gold);font-style:italic}
-.agent-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.12);border-radius:30px;padding:5px 10px 5px 5px;cursor:pointer}
-.ap-av{width:22px;height:22px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--ink2)}
-.ap-name{font-size:11px;color:rgba(255,255,255,0.65)}
-
-.tab-bar{display:flex;gap:1px;overflow-x:auto;scrollbar-width:none}
-.tab-bar::-webkit-scrollbar{display:none}
-.ctab{padding:10px 12px;font-size:12px;color:rgba(255,255,255,0.4);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;white-space:nowrap;flex-shrink:0}
-.ctab.on{color:var(--gold);border-bottom-color:var(--gold);font-weight:500}
-
-.client-body{flex:1;overflow-y:auto}
-.cscreen{display:none}
-.cscreen.on{display:block}
-
-/* Score hero */
-.score-hero{background:var(--ink2);padding:28px 22px;text-align:center;position:relative;overflow:hidden}
-.score-hero::before{content:'';position:absolute;bottom:-70px;left:50%;transform:translateX(-50%);width:320px;height:320px;border-radius:50%;background:rgba(201,168,76,0.06)}
-.sh-eyebrow{display:inline-flex;align-items:center;gap:5px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);color:var(--gold);font-size:10px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:16px;letter-spacing:0.8px;text-transform:uppercase}
-.sh-title{font-family:var(--fh);font-size:26px;font-weight:800;color:#fff;line-height:1.15;margin-bottom:8px}
-.sh-sub{font-size:13px;color:rgba(255,255,255,0.45);line-height:1.6;max-width:320px;margin:0 auto 22px}
-.score-ring-wrap{position:relative;width:130px;height:130px;margin:0 auto 8px}
-.score-ring-wrap svg{transform:rotate(-90deg)}
+/* score hero */
+.shero{background:var(--k2);padding:20px;position:relative;overflow:hidden}
+.shero::before{content:'';position:absolute;bottom:-90px;left:50%;transform:translateX(-50%);width:380px;height:380px;border-radius:50%;background:rgba(201,168,76,.05)}
+.s-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.s-name{font-family:var(--fh);font-size:17px;font-weight:800;color:#fff;margin-bottom:2px}
+.s-sub{font-size:12px;color:rgba(255,255,255,.4);line-height:1.4}
+.srw{position:relative;width:90px;height:90px;flex-shrink:0}
+.srw svg{transform:rotate(-90deg);display:block}
 .sri{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.snum{font-family:var(--fh);font-size:36px;font-weight:800}
-.slbl{font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px}
-.verdict{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;margin-top:10px}
-.verdict.bad{background:rgba(196,75,58,0.2);border:1px solid rgba(196,75,58,0.35);color:#FF8A80}
-.verdict.ok{background:rgba(29,122,95,0.2);border:1px solid rgba(29,122,95,0.35);color:#80CBC4}
+.sn{font-family:var(--fh);font-size:22px;font-weight:800;color:var(--g)}
+.sl{font-size:9px;color:rgba(255,255,255,.3)}
+.cbars{display:flex;flex-direction:column;gap:6px;margin-top:2px}
+.crow{display:flex;align-items:center;gap:7px}
+.clbl{font-size:11px;color:rgba(255,255,255,.48);width:118px;flex-shrink:0}
+.ctrack{flex:1;height:5px;background:rgba(255,255,255,.08);border-radius:10px;overflow:hidden}
+.cfill{height:100%;border-radius:10px;transition:width .6s cubic-bezier(.34,1.56,.64,1)}
+.f1{background:var(--r)}.f2{background:#7C3AED}.f3{background:var(--g)}.f4{background:#1A6B9E}.f5{background:var(--j)}
+.cpct{font-size:11px;color:rgba(255,255,255,.35);width:26px;text-align:right;flex-shrink:0}
+.vchip{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;margin-top:12px}
+.vr{background:rgba(196,75,58,.2);border:1px solid rgba(196,75,58,.35);color:#FF8A80}
+.va{background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.35);color:var(--g)}
+.vg{background:rgba(29,122,95,.2);border:1px solid rgba(29,122,95,.35);color:#80CBC4}
 
-/* Impact box */
-.impact-box{background:rgba(196,75,58,0.12);border:1.5px solid rgba(196,75,58,0.25);border-radius:14px;padding:16px;text-align:left;margin:20px 0}
-.impact-title{font-size:12px;font-weight:700;color:#FF8A80;margin-bottom:8px}
-.impact-item{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:rgba(255,255,255,0.58);line-height:1.45;margin-bottom:5px}
-.impact-dot{width:5px;height:5px;border-radius:50%;background:var(--coral);flex-shrink:0;margin-top:5px}
+/* confetti */
+.cov{position:fixed;inset:0;z-index:9998;pointer-events:none;overflow:hidden}
+.cp{position:absolute;border-radius:2px;animation:cfall 1.4s ease forwards}
+@keyframes cfall{0%{opacity:1;transform:translateY(-20px) rotate(0)}100%{opacity:0;transform:translateY(100vh) rotate(720deg)}}
+@keyframes rpulse{0%,100%{filter:drop-shadow(0 0 0px transparent)}50%{filter:drop-shadow(0 0 12px rgba(0,200,150,.7))}}
+.srw.cel svg{animation:rpulse .7s ease}
+@keyframes ncount{0%,100%{transform:scale(1)}40%{transform:scale(1.18)}}
+.sn.anim{animation:ncount .15s ease}
 
-/* Gap cards */
-.gaps-section{padding:20px 16px}
-.section-title{font-family:var(--fh);font-size:18px;font-weight:800;color:var(--ink);margin-bottom:4px}
-.section-sub{font-size:13px;color:var(--ink3);opacity:0.6;line-height:1.55;margin-bottom:18px}
-.gap-card{border-radius:16px;border:1.5px solid;padding:16px;margin-bottom:10px;cursor:pointer;transition:all 0.15s}
-.gap-card.critical{background:#FFF5F4;border-color:#F5C4BE}
-.gap-card.high{background:#FFFBF0;border-color:#F0DFA0}
-.gap-card.medium{background:#F2F9F6;border-color:#B2DDD0}
-.gap-card.done-card{background:var(--ash);border-color:var(--ash3)}
-.gc-row{display:flex;align-items:center;gap:11px}
-.gc-ico{font-size:24px;flex-shrink:0}
-.gc-mid{flex:1}
-.gc-pri{font-size:10px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;margin-bottom:2px}
-.gc-pri.c{color:var(--coral)}
-.gc-pri.h{color:#9A7200}
-.gc-pri.m{color:var(--jade)}
-.gc-pri.d{color:var(--ink3);opacity:0.45}
-.gc-name{font-family:var(--fh);font-size:14px;font-weight:700;color:var(--ink);line-height:1.25}
-.gc-name.done{text-decoration:line-through;opacity:0.35}
-.gc-chev{font-size:15px;color:rgba(0,0,0,0.2);flex-shrink:0;transition:transform 0.2s}
-.gap-card.open .gc-chev{transform:rotate(90deg)}
-.gc-why{font-size:12px;color:var(--ink3);line-height:1.45;margin-top:8px;opacity:0.7}
-.gc-expand{display:none;margin-top:13px;padding-top:13px;border-top:1px solid rgba(0,0,0,0.07)}
-.gap-card.open .gc-expand{display:block}
-.gc-detail{font-size:13px;color:var(--ink3);line-height:1.6;margin-bottom:13px}
-.gc-btn{width:100%;padding:12px;border-radius:var(--r);font-family:var(--fh);font-size:13px;font-weight:700;cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;gap:7px;transition:all 0.15s}
-.gc-btn.coral{background:var(--coral);color:#fff}
-.gc-btn.gold{background:var(--gold);color:var(--ink2)}
-.gc-btn.jade{background:var(--jade);color:#fff}
+/* sync badge */
+.sync-badge{display:flex;align-items:center;gap:6px;font-size:11px;padding:6px 12px;border-radius:20px;font-weight:500;margin:8px 16px 0}
+.sync-ok{background:var(--jl);color:var(--j)}
+.sync-err{background:var(--rl);color:var(--r)}
+.sync-pending{background:var(--gl);color:var(--gd)}
+.sync-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sdot-ok{background:var(--j)}.sdot-err{background:var(--r)}.sdot-pend{background:var(--g);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* Checklist */
-.cl-section{background:var(--W);border-radius:var(--r2);border:1.5px solid var(--ash3);overflow:hidden;margin-bottom:12px}
-.cls-head{padding:12px 16px;border-bottom:1px solid var(--ash2);display:flex;justify-content:space-between;align-items:center}
-.cls-t{font-family:var(--fh);font-size:13px;font-weight:700}
-.cls-p{font-size:12px;color:var(--gold);font-weight:600}
-.cl-item{display:flex;align-items:center;gap:11px;padding:12px 16px;border-bottom:1px solid var(--ash2);cursor:pointer;transition:background 0.1s}
-.cl-item:last-child{border-bottom:none}
-.cl-item:hover{background:var(--ash)}
-.cl-box{width:20px;height:20px;border-radius:5px;border:2px solid var(--ash3);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s}
-.cl-box.chk{background:var(--jade);border-color:var(--jade)}
-.cl-lbl{flex:1;font-size:13px;color:var(--ink);line-height:1.35}
-.cl-lbl.done{text-decoration:line-through;opacity:0.35}
-.cl-tag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;flex-shrink:0;white-space:nowrap}
-.cl-tag.r{background:var(--coral-l);color:var(--coral)}
-.cl-tag.g{background:var(--gold-l);color:var(--gold-d)}
-.cl-tag.gr{background:var(--ash2);color:var(--ink3)}
-.cl-tag.gn{background:var(--jade-l);color:var(--jade)}
+/* profile sections (simplified for this auth build) */
+.shd{padding:18px 18px 6px}
+.shd h2{font-family:var(--fh);font-size:19px;font-weight:800;color:var(--k);margin-bottom:3px}
+.shd p{font-size:13px;color:var(--k3);opacity:.6;line-height:1.5}
+.p16{padding:0 16px}
+.pb24{padding-bottom:24px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:var(--W);border-radius:var(--br2);border:1.5px solid var(--a3);padding:16px;cursor:pointer;transition:all .18s}
+.card:hover{border-color:var(--g);box-shadow:0 2px 16px rgba(0,0,0,.07)}
+.ci{font-size:24px;margin-bottom:9px}.ct{font-family:var(--fh);font-size:13px;font-weight:700;color:var(--k);margin-bottom:3px}
+.cd{font-size:12px;color:var(--k3);opacity:.6;line-height:1.35}
+.scta{padding:12px 16px 4px;background:var(--W);border-top:1px solid var(--a2)}
+.sctabtn{width:100%;background:var(--r);color:#fff;font-family:var(--fh);font-size:14px;font-weight:700;padding:14px;border-radius:var(--br);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.msb{background:var(--k2);padding:10px 16px;display:flex;align-items:center;gap:12px}
+.msbn{font-family:var(--fh);font-size:18px;font-weight:800;color:var(--g)}
+.msbl{font-size:10px;color:rgba(255,255,255,.35)}
+.msbbar{flex:1;height:5px;background:rgba(255,255,255,.08);border-radius:10px;overflow:hidden}
+.msbfill{height:100%;background:var(--g);border-radius:10px;transition:width .5s ease}
 
-/* Education */
-.edu-card{background:var(--W);border-radius:var(--r2);border:1.5px solid var(--ash3);margin-bottom:10px;overflow:hidden;cursor:pointer}
-.edu-top{display:flex;align-items:center;gap:12px;padding:16px}
-.edu-ico{font-size:22px;flex-shrink:0}
-.edu-t{font-family:var(--fh);font-size:13px;font-weight:700;color:var(--ink);flex:1;line-height:1.35}
-.edu-chev{font-size:14px;color:var(--ash3);transition:transform 0.2s;flex-shrink:0}
-.edu-card.open .edu-chev{transform:rotate(90deg);color:var(--gold)}
-.edu-body{display:none;padding:0 16px 16px;font-size:13px;color:var(--ink3);line-height:1.65;border-top:1px solid var(--ash2)}
-.edu-card.open .edu-body{display:block;padding-top:14px}
-.edu-hl{background:var(--gold-l);border-left:3px solid var(--gold);padding:10px 12px;border-radius:0 var(--r) var(--r) 0;margin-top:12px;font-size:12px;color:var(--gold-d);font-weight:500;line-height:1.5}
-
-/* Contact screen */
-.agent-hero-card{background:var(--ink2);border-radius:var(--r2);padding:22px;margin-bottom:16px;position:relative;overflow:hidden}
-.agent-hero-card::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(201,168,76,0.08)}
-.ah-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.25);color:var(--gold);font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:12px;letter-spacing:0.5px;text-transform:uppercase}
-.ah-av{width:56px;height:56px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:var(--ink2);margin-bottom:12px}
-.ah-name{font-family:var(--fh);font-size:20px;font-weight:800;color:#fff;margin-bottom:3px}
-.ah-role{font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:16px;line-height:1.5}
-
-.form-card{background:var(--W);border-radius:var(--r2);border:1.5px solid var(--ash3);padding:18px;margin-bottom:14px}
-.form-card-t{font-family:var(--fh);font-size:14px;font-weight:700;margin-bottom:14px}
-.form-sel{width:100%;padding:11px 13px;border:1.5px solid var(--ash3);border-radius:var(--r);font-family:var(--fb);font-size:13px;color:var(--ink);outline:none;background:var(--W);margin-bottom:12px}
-.form-ta{width:100%;padding:11px 13px;border:1.5px solid var(--ash3);border-radius:var(--r);font-family:var(--fb);font-size:13px;color:var(--ink);outline:none;background:var(--W);resize:none;margin-bottom:12px}
-.form-ta:focus,.form-sel:focus{border-color:var(--gold)}
-.privacy-note{font-size:11px;color:var(--ink3);opacity:0.45;text-align:center;line-height:1.55;padding:0 8px;margin-bottom:24px}
-
-/* Mini score bar */
-.msb{background:var(--ink2);padding:11px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,0.07)}
-.msb-score{font-family:var(--fh);font-size:20px;font-weight:800;color:var(--gold)}
-.msb-lbl{font-size:11px;color:rgba(255,255,255,0.38)}
-.msb-bar{flex:1;height:5px;background:rgba(255,255,255,0.08);border-radius:10px;overflow:hidden}
-.msb-fill{height:100%;background:var(--gold);border-radius:10px;width:28%}
-.msb-cta{font-size:11px;color:var(--coral);font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
-
-/* Sticky CTA */
-.sticky-cta{padding:12px 16px;background:var(--W);border-top:1px solid var(--ash3)}
-.sticky-cta-btn{width:100%;background:var(--coral);color:#fff;font-family:var(--fh);font-size:14px;font-weight:700;padding:14px;border-radius:var(--r);border:none;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:8px}
-.sticky-cta-btn:hover{background:#A33D2E}
-
-/* Quiz */
-.quiz-wrap{padding:22px 20px 80px}
-.quiz-pb{height:4px;background:var(--ash3);border-radius:10px;margin-bottom:22px;overflow:hidden}
-.quiz-pf{height:100%;background:var(--gold);border-radius:10px;transition:width 0.4s ease}
-.quiz-q{font-family:var(--fh);font-size:18px;font-weight:700;color:var(--ink);line-height:1.35;margin-bottom:5px}
-.quiz-hint{font-size:12px;color:var(--ink3);opacity:0.5;margin-bottom:22px;line-height:1.4}
-.quiz-opts{display:flex;flex-direction:column;gap:9px;margin-bottom:22px}
-.qopt{display:flex;align-items:center;gap:12px;padding:13px 15px;border:1.5px solid var(--ash3);border-radius:var(--r2);cursor:pointer;transition:all 0.15s;background:var(--W)}
-.qopt:hover,.qopt.sel{border-color:var(--gold);background:var(--gold-l)}
-.qopt-ico{font-size:20px;flex-shrink:0}
-.qopt-txt{font-size:14px;color:var(--ink);flex:1}
-.qopt-radio{width:19px;height:19px;border-radius:50%;border:2px solid var(--ash3);flex-shrink:0;margin-left:auto;transition:all 0.15s;position:relative}
-.qopt.sel .qopt-radio{border-color:var(--gold);background:var(--gold)}
-.qopt.sel .qopt-radio::after{content:'';position:absolute;inset:3px;border-radius:50%;background:#fff}
-.quiz-nav{display:flex;gap:10px}
-.qbtn{flex:1;padding:13px;border-radius:var(--r);font-family:var(--fh);font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all 0.15s}
-.qbtn.next{background:var(--gold);color:var(--ink2)}
-.qbtn.back{background:var(--ash2);color:var(--ink3)}
-.quiz-result{text-align:center;padding:28px 20px}
-
-/* Animations */
-@keyframes fin{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-.cscreen.on,.ascreen.on{animation:fin 0.2s ease}
-
-/* Modal */
-.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:500;align-items:center;justify-content:center;padding:20px}
-.mo.open{display:flex}
-.modal{background:var(--W);border-radius:var(--r2);padding:26px;width:100%;max-width:420px;animation:msl 0.2s ease}
-@keyframes msl{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-.modal-t{font-family:var(--fh);font-size:16px;font-weight:700;margin-bottom:5px}
-.modal-d{font-size:13px;color:var(--ink3);opacity:0.6;margin-bottom:18px;line-height:1.5}
-.modal-foot{display:flex;gap:8px;margin-top:18px;justify-content:flex-end}
+/* admin create agent form */
+.form-card{background:var(--W);border-radius:var(--br2);border:1.5px solid var(--a3);padding:20px;margin-bottom:16px}
+.fc-title{font-family:var(--fh);font-size:14px;font-weight:700;margin-bottom:14px}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 </style>
 </head>
 <body>
 <div id="app">
+<div class="toast" id="toast"></div>
+<div class="cov" id="cov"></div>
 
-<!-- ============================================================
-     LOGIN VIEW
-     ============================================================ -->
-<div class="view active" id="view-login">
-  <div class="login-box">
-    <div class="login-logo">
-      <div class="login-mark">P.</div>
-      <div class="login-brand">PeaceOut.sg</div>
-      <div class="login-tag">"Are you ready to die?"</div>
+<!-- ════════ AUTH VIEW ════════ -->
+<div class="view active" id="view-auth">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="amark">P.</div>
+      <div class="abrand">PeaceOut.sg</div>
+      <div class="atag">"Are you ready to die?"</div>
     </div>
-    <div class="login-tabs">
-      <div class="login-tab active" id="tab-agent" onclick="switchTab('agent')">Agent Login</div>
-      <div class="login-tab" id="tab-client" onclick="switchTab('client')">Client Access</div>
+
+    <!-- ROLE TABS -->
+    <div class="auth-tabs">
+      <div class="auth-tab on" id="role-tab-client" onclick="switchRole('client')">I'm a Client</div>
+      <div class="auth-tab" id="role-tab-agent" onclick="switchRole('agent')">I'm a Consultant</div>
     </div>
-    <div id="agent-form">
-      <label class="form-lbl">Agent Code</label>
-      <input class="form-inp" id="agentCode" placeholder="e.g. A313-088" value="A313-088"/>
-      <label class="form-lbl">Password</label>
-      <input class="form-inp" id="agentPw" type="password" placeholder="••••••••" value="demo123"/>
-      <button class="btn btn-gold btn-w" onclick="agentLogin()">Sign In as Consultant →</button>
-      <div class="login-note">Awesome 313 Agency · Authorised under Nirvana Memorial Garden<br>Only registered consultants may access the agent portal.</div>
-    </div>
-    <div id="client-form" style="display:none">
-      <div class="login-client-info">
-        <div class="big-icon">🔗</div>
-        <p>Clients access PeaceOut.sg through a personalised link sent by their consultant. If you received a link, please use that directly.</p>
-        <button class="btn btn-gold btn-w" onclick="clientDemo()">Preview Client Experience</button>
+
+    <!-- CLIENT AUTH -->
+    <div id="auth-client">
+      <div class="mode-tabs">
+        <div class="mode-tab on" id="ctab-signin" onclick="clientMode('signin')">Sign In</div>
+        <div class="mode-tab" id="ctab-signup" onclick="clientMode('signup')">Create Account</div>
       </div>
-      <div class="login-note">No account needed — your consultant's link is your access.</div>
+
+      <!-- Client Sign In -->
+      <div id="client-signin">
+        <div class="fg"><label class="lbl">Mobile Number</label><input class="inp" id="c-signin-mobile" placeholder="+65 9XXX XXXX" type="tel"/></div>
+        <div class="fg"><label class="lbl">Password</label><input class="inp" id="c-signin-pw" type="password" placeholder="••••••••"/></div>
+        <button class="btn b-gold b-w" style="padding:13px;font-size:15px" id="c-signin-btn" onclick="clientSignIn()">Sign In →</button>
+        <div class="divider-text">or</div>
+        <button class="btn b-ghost b-w" style="padding:11px" onclick="sendClientOTP()">📱 Sign in with SMS OTP</button>
+        <span class="back-link" onclick="clientMode('signup')">Don't have an account? Create one →</span>
+      </div>
+
+      <!-- Client Sign Up -->
+      <div id="client-signup" style="display:none">
+        <div class="al a-g"><span>🔗</span><div>If you received a link from your consultant, use that link directly — it will set up your account automatically.</div></div>
+        <div class="fg"><label class="lbl">Full Name <span class="req">*</span></label><input class="inp" id="c-name" placeholder="As per NRIC"/></div>
+        <div class="r2">
+          <div class="fg"><label class="lbl">Mobile <span class="req">*</span></label><input class="inp" id="c-mobile" placeholder="+65 9XXX XXXX" type="tel"/></div>
+          <div class="fg"><label class="lbl">Race / Religion</label><select class="sel" id="c-religion"><option value="">Select</option><option>Chinese — Buddhist / Taoist</option><option>Chinese — Christian</option><option>Malay — Muslim</option><option>Indian — Hindu</option><option>Indian — Christian</option><option>Eurasian</option><option>Other</option></select></div>
+        </div>
+        <div class="fg"><label class="lbl">Password <span class="req">*</span></label><input class="inp" id="c-pw" type="password" placeholder="At least 8 characters"/><div class="hint">Min 8 characters. You'll use this to log in next time.</div></div>
+        <div class="fg"><label class="lbl">Agent Code (if given)</label><input class="inp" id="c-agent-code" placeholder="e.g. A313-088 (optional)"/><div class="hint">Links your account to your Awesome 313 consultant</div></div>
+        <button class="btn b-gold b-w" style="padding:13px;font-size:15px" id="c-signup-btn" onclick="clientSignUp()">Create My Account →</button>
+        <span class="back-link" onclick="clientMode('signin')">← Already have an account? Sign in</span>
+      </div>
+
+      <!-- Client OTP -->
+      <div id="client-otp" style="display:none">
+        <div class="al a-j"><span>📱</span><div>We sent a 6-digit code to your mobile number. Enter it below.</div></div>
+        <div class="fg"><label class="lbl">OTP Code</label><input class="inp" id="c-otp" placeholder="123456" maxlength="6" type="number"/></div>
+        <button class="btn b-gold b-w" style="padding:13px" id="c-otp-btn" onclick="verifyClientOTP()">Verify →</button>
+        <span class="back-link" onclick="clientMode('signin')">← Back</span>
+      </div>
+    </div>
+
+    <!-- AGENT AUTH -->
+    <div id="auth-agent" style="display:none">
+      <div class="mode-tabs">
+        <div class="mode-tab on" id="atab-signin" onclick="agentMode('signin')">Sign In</div>
+        <div class="mode-tab" id="atab-signup" onclick="agentMode('signup')">Create Account</div>
+      </div>
+
+      <!-- Agent Sign In -->
+      <div id="agent-signin">
+        <div class="fg"><label class="lbl">Email Address</label><input class="inp" id="a-signin-email" placeholder="you@email.com" type="email"/></div>
+        <div class="fg"><label class="lbl">Password</label><input class="inp" id="a-signin-pw" type="password" placeholder="••••••••"/></div>
+        <button class="btn b-gold b-w" style="padding:13px;font-size:15px" id="a-signin-btn" onclick="agentSignIn()">Sign In to Agent Portal →</button>
+        <span class="back-link" onclick="forgotPassword()">Forgot password?</span>
+        <span class="back-link" onclick="agentMode('signup')">New consultant? Create your account →</span>
+      </div>
+
+      <!-- Agent Sign Up -->
+      <div id="agent-signup" style="display:none">
+        <div class="al a-g"><span>⭐</span><div>New Awesome 313 consultants need an <strong>invitation code</strong> from the agency admin before creating an account.</div></div>
+        <div class="fg"><label class="lbl">Invitation Code <span class="req">*</span></label><input class="inp" id="a-invite" placeholder="Given by agency admin"/></div>
+        <div class="r2">
+          <div class="fg"><label class="lbl">Full Name <span class="req">*</span></label><input class="inp" id="a-name" placeholder="Full name"/></div>
+          <div class="fg"><label class="lbl">Agent Code <span class="req">*</span></label><input class="inp" id="a-code" placeholder="e.g. A313-XXX"/></div>
+        </div>
+        <div class="fg"><label class="lbl">Email Address <span class="req">*</span></label><input class="inp" id="a-email" placeholder="you@email.com" type="email"/></div>
+        <div class="fg"><label class="lbl">Mobile Number</label><input class="inp" id="a-mobile" placeholder="+65 9XXX XXXX" type="tel"/></div>
+        <div class="fg"><label class="lbl">Password <span class="req">*</span></label><input class="inp" id="a-pw" type="password" placeholder="At least 8 characters"/></div>
+        <button class="btn b-gold b-w" style="padding:13px;font-size:15px" id="a-signup-btn" onclick="agentSignUp()">Create Consultant Account →</button>
+        <span class="back-link" onclick="agentMode('signin')">← Already have an account? Sign in</span>
+      </div>
+    </div>
+
+    <div style="font-size:11px;color:var(--k3);opacity:.4;text-align:center;margin-top:16px;line-height:1.55">
+      PeaceOut.sg Beta · Awesome 313 Agency · Authorised by Nirvana Memorial Garden<br>
+      Data stored securely on Singapore servers (PDPA compliant)
     </div>
   </div>
 </div>
 
-<!-- ============================================================
-     AGENT PORTAL VIEW
-     ============================================================ -->
-<div class="view" id="view-agent" style="max-width:100%;flex-direction:row">
-
-  <div class="agent-sidebar" id="agentSidebar">
-    <div class="brand-block">
-      <div class="brand-row"><div class="bmark">P.</div><div class="bname">PeaceOut.sg</div></div>
-      <div class="btag">"Are you ready to die?"</div>
-      <div class="bagency"><strong>Awesome 313 Agency</strong>Authorised · Nirvana Memorial Garden</div>
+<!-- ════════ AGENT PORTAL ════════ -->
+<div class="view" id="view-agent">
+  <div class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-brand-row"><div class="sb-mark">P.</div><div class="sb-name">PeaceOut.sg</div></div>
+      <div class="sb-tag">"Are you ready to die?"</div>
+      <div class="sb-agency"><strong>Awesome 313 Agency</strong>Authorised · Nirvana Memorial Garden</div>
     </div>
-    <nav class="anav">
-      <div class="ans">My Workspace</div>
-      <div class="ani on" onclick="ashow('dashboard')">◈ Dashboard <span class="anb">3</span></div>
-      <div class="ani" onclick="ashow('clients')">◉ My Clients</div>
-      <div class="ani" onclick="ashow('sharelink')">⇧ Share My Link</div>
-      <div class="ans">Client Tools</div>
-      <div class="ani" onclick="ashow('leads')">🔔 Lead Notifications <span class="anb g">2</span></div>
-      <div class="ani" onclick="ashow('catalogue')">⛩ Nirvana Catalogue</div>
-      <div class="ani" onclick="ashow('admin')">⊿ Admin Console</div>
-      <div class="ans">Simulate</div>
-      <div class="ani" onclick="clientDemo()">👁 Preview Client View</div>
+    <nav class="sb-nav">
+      <div class="sb-section">My Workspace</div>
+      <div class="sb-item on" onclick="aGo('dashboard')">◈ Dashboard<span class="sb-badge" id="lead-count">0</span></div>
+      <div class="sb-item" onclick="aGo('my-clients')">◉ My Clients</div>
+      <div class="sb-item" onclick="aGo('leads')">🔔 Leads<span class="sb-badge g" id="new-lead-count">0</span></div>
+      <div class="sb-item" onclick="aGo('share-link')">⇧ My Share Link</div>
+      <div class="sb-section">Products</div>
+      <div class="sb-item" onclick="aGo('catalogue')">⛩ Nirvana Catalogue</div>
+      <div class="sb-item" id="admin-nav-item" style="display:none" onclick="aGo('admin')">🛡 Admin Console</div>
     </nav>
-    <div class="agent-foot">
-      <div class="cons-chip">
-        <div class="cav">LH</div>
-        <div><div class="cname">Lee Hwee Teng</div><div class="ccode">A313-088 · Consultant</div></div>
-        <div class="logout-lnk" onclick="logout()">↩</div>
+    <div class="sb-foot">
+      <div class="agent-chip">
+        <div class="agent-av" id="agentAvatar">?</div>
+        <div><div class="agent-name" id="agentName">Loading...</div><div class="agent-code" id="agentCodeDisplay"></div></div>
+        <div class="logout-btn" onclick="signOut()">↩</div>
       </div>
     </div>
   </div>
@@ -473,596 +356,1158 @@ tr:hover td{background:var(--ash)}
   <div class="agent-main">
 
     <!-- Dashboard -->
-    <div class="ascreen on" id="ascreen-dashboard">
-      <div class="topbar">
-        <div><div class="pt">Dashboard</div><div class="ps">2 new leads from your shared link today</div></div>
-        <div class="tr">
-          <button class="btn btn-ghost" style="font-size:12px" onclick="ashow('sharelink')">⇧ Share Link</button>
-          <button class="btn btn-gold" style="font-size:12px" onclick="clientDemo()">👁 Preview Client View</button>
-        </div>
-      </div>
-      <div class="acontent">
-        <div class="alert gold"><div style="font-size:15px;flex-shrink:0">⭐</div><div><strong>New lead:</strong> Tan Kok Ming completed his assessment via your link. Score: 28% — missing niche & funeral package. <span style="font-weight:700;cursor:pointer;text-decoration:underline" onclick="ashow('leads')">Follow up now →</span></div><div class="ac" onclick="this.parentElement.remove()">✕</div></div>
-        <div class="stat-grid">
-          <div class="stat-card"><div class="sl">Links Sent (MTD)</div><div class="sv">47</div><div class="sc up">↑ 12 this week</div></div>
-          <div class="stat-card"><div class="sl">Assessments Done</div><div class="sv">31</div><div class="sc up">66% completion</div></div>
-          <div class="stat-card"><div class="sl">Hot Leads</div><div class="sv">18</div><div class="sc up">↑ 58% from link</div></div>
-          <div class="stat-card"><div class="sl">Revenue (MTD)</div><div class="sv">S$42.8k</div><div class="sc up">↑ 28% MoM</div></div>
+    <div class="ascreen on" id="as-dashboard">
+      <div class="atb"><div><div class="at-title">Dashboard</div><div class="at-sub" id="dash-sub">Loading your data...</div></div><div class="at-right"><button class="btn b-ghost b-sm" onclick="aGo('share-link')">⇧ My Link</button><button class="btn b-gold b-sm" onclick="openClientView()">👁 Preview</button></div></div>
+      <div class="ac">
+        <div class="stat-grid" id="dashStats">
+          <div class="stat-card"><div class="stat-lbl">My Clients</div><div class="stat-val" id="st-clients">—</div><div class="stat-ch">Total</div></div>
+          <div class="stat-card"><div class="stat-lbl">Hot Leads</div><div class="stat-val" id="st-leads">—</div><div class="stat-ch">Need follow-up</div></div>
+          <div class="stat-card"><div class="stat-lbl">Niches (MTD)</div><div class="stat-val" id="st-niches">—</div><div class="stat-ch">Packages sold</div></div>
+          <div class="stat-card"><div class="stat-lbl">Avg Score</div><div class="stat-val" id="st-score">—</div><div class="stat-ch">Client readiness</div></div>
         </div>
         <div class="share-panel">
-          <div class="sp-t">Your Personalised Assessment Link</div>
-          <div class="sp-s">Every client who opens this is tracked to you. When they request contact, you're notified instantly.</div>
-          <div class="link-box">
-            <div class="link-url" id="agentLink">peaceout.sg/assess?agent=A313-088&ref=LeeHweeTeng</div>
-            <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;flex-shrink:0" onclick="copyLink()">Copy</button>
+          <div class="sp-title">Your Personalised Assessment Link</div>
+          <div class="sp-sub">Every client who opens this is tracked to you. You're notified when they complete the assessment.</div>
+          <div class="link-box"><div class="link-url" id="myShareLink">Loading...</div><button class="btn b-ghost b-sm" style="flex-shrink:0;color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.15)" onclick="copyMyLink()">Copy</button></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn b-sm" style="background:#25D366;color:#fff;font-weight:700" onclick="shareWA()">📱 WhatsApp</button>
+            <button class="btn b-ghost b-sm" style="color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.15)" onclick="copyMyLink()">📋 Copy Link</button>
           </div>
-          <div class="share-btns">
-            <button class="btn btn-wa" style="font-size:12px;padding:8px 14px">📱 WhatsApp</button>
-            <button class="btn btn-ghost" style="font-size:12px;padding:8px 14px">💬 SMS</button>
-            <button class="btn btn-ghost" style="font-size:12px;padding:8px 14px" onclick="openMo('moQR')">⬛ QR Code</button>
-            <button class="btn btn-ghost" style="font-size:12px;padding:8px 14px" onclick="clientDemo()">👁 Preview</button>
-          </div>
-          <div class="sp-note">⚡ Clients never see your commission, other clients' data, catalogue pricing, or this portal. They see only their own report and a way to contact you.</div>
+          <div class="sp-note">⚡ Clients never see pricing, commission, other clients' data, or this portal.</div>
         </div>
-        <div class="cards-grid">
-          <div class="card" onclick="ashow('leads')"><div class="card-ico">🔔</div><div class="card-t">Lead Notifications</div><div class="card-d">2 clients completed assessment and want to talk.</div><div style="margin-top:10px"><span class="tag red">2 new leads</span></div></div>
-          <div class="card" onclick="ashow('clients')"><div class="card-ico">◉</div><div class="card-t">My Clients</div><div class="card-d">24 clients managed. 7 niches, 4 funeral packages MTD.</div></div>
-          <div class="card" onclick="ashow('catalogue')"><div class="card-ico">⛩</div><div class="card-t">Nirvana Catalogue</div><div class="card-d">Niches, funeral packages, festival packages — full pricing.</div></div>
-          <div class="card" onclick="clientDemo()"><div class="card-ico">👁</div><div class="card-t">Preview Client View</div><div class="card-d">See exactly what your clients experience when they open your link.</div></div>
-        </div>
+        <div id="recent-leads-container"></div>
       </div>
     </div>
 
-    <!-- Share Link -->
-    <div class="ascreen" id="ascreen-sharelink">
-      <div class="topbar"><div><div class="pt">Share Assessment Link</div><div class="ps">All leads tracked to you automatically</div></div></div>
-      <div class="acontent">
-        <div class="alert jade"><div style="font-size:15px">ℹ</div><div>Clients open your link, do a 5-min assessment, see their readiness score, then WhatsApp you directly. You're notified every time someone completes.</div><div class="ac" onclick="this.parentElement.remove()">✕</div></div>
-        <div class="share-panel" style="margin-bottom:18px">
-          <div class="sp-t">Your Unique Agent Link</div>
-          <div class="sp-s">Permanently tied to your agent code A313-088</div>
-          <div class="link-box" style="margin-bottom:14px">
-            <div class="link-url">peaceout.sg/assess?agent=A313-088&ref=LeeHweeTeng</div>
-            <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;flex-shrink:0" onclick="copyLink()">Copy</button>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-            <button class="btn btn-wa" style="font-size:12px;padding:11px">📱 WhatsApp Template</button>
-            <button class="btn btn-ghost" style="font-size:12px;padding:11px">💬 SMS Template</button>
-            <button class="btn btn-ghost" style="font-size:12px;padding:11px" onclick="openMo('moQR')">⬛ QR Code</button>
-            <button class="btn btn-ghost" style="font-size:12px;padding:11px">📧 Email Template</button>
-          </div>
-          <div class="sp-note">⚡ Client privacy protected: no commission structure, no other client data, no catalogue pricing visible to them.</div>
-        </div>
-        <div style="background:var(--W);border-radius:var(--r2);border:1.5px solid var(--ash3);padding:18px;margin-bottom:18px">
-          <div style="font-family:var(--fh);font-size:13px;font-weight:700;margin-bottom:12px">WhatsApp Template</div>
-          <div style="background:var(--ash);border-radius:var(--r);padding:14px;font-size:13px;color:var(--ink3);line-height:1.6;border-left:3px solid var(--gold);font-style:italic">Hi [Name]! I'm Lee from Awesome 313 Agency. 👋<br><br>Have you ever thought about what happens to your family when you're gone? Most of us haven't planned for it.<br><br>I put together a free 5-minute readiness check — it shows exactly what gaps your family might face. No obligation at all. 🔍<br><br>Check yours here: <strong>peaceout.sg/assess?agent=A313-088</strong><br><br>Happy to walk you through the results! 😊</div>
-          <button class="btn btn-ghost" style="margin-top:10px;font-size:12px">Copy Message</button>
-        </div>
+    <!-- My Clients -->
+    <div class="ascreen" id="as-my-clients">
+      <div class="atb"><div><div class="at-title">My Clients</div><div class="at-sub">Only your clients — other agents cannot see these</div></div></div>
+      <div class="ac">
         <div class="tw">
-          <div class="tw-head"><div class="tw-t">Recent Link Activity</div></div>
-          <div class="t-scroll">
-            <table>
-              <thead><tr><th>Name</th><th>Opened</th><th>Completed</th><th>Score</th><th>Status</th></tr></thead>
-              <tbody>
-                <tr><td><strong>Tan Kok Ming</strong></td><td>2h ago</td><td>Yes</td><td style="color:var(--coral);font-weight:700">28%</td><td><span class="pill red">Requested Contact</span></td></tr>
-                <tr><td><strong>Linda Chong</strong></td><td>5h ago</td><td>Yes</td><td style="color:var(--gold-d);font-weight:700">51%</td><td><span class="pill gold">Viewed</span></td></tr>
-                <tr><td><strong>Anonymous</strong></td><td>Yesterday</td><td>No</td><td>—</td><td><span class="pill gray">Dropped Off</span></td></tr>
-                <tr><td><strong>Raj Subramaniam</strong></td><td>2 days ago</td><td>Yes</td><td style="color:var(--coral);font-weight:700">35%</td><td><span class="pill red">Requested Contact</span></td></tr>
-              </tbody>
-            </table>
-          </div>
+          <div class="tw-head"><div class="tw-title">All My Clients</div><input style="padding:7px 10px;border:1.5px solid var(--a3);border-radius:var(--br);font-size:12px;outline:none" placeholder="Search..." id="clientSearch" oninput="filterClients()"/></div>
+          <div class="ts"><table><thead><tr><th>Client</th><th>Score</th><th>Niche</th><th>Funeral Pkg</th><th>Priority</th><th>Source</th><th>Last Active</th></tr></thead><tbody id="clientsTableBody"><tr><td colspan="7" style="text-align:center;padding:20px;opacity:.5">Loading...</td></tr></tbody></table></div>
         </div>
       </div>
     </div>
 
     <!-- Leads -->
-    <div class="ascreen" id="ascreen-leads">
-      <div class="topbar"><div><div class="pt">Lead Notifications</div><div class="ps">Clients who completed the assessment and want to talk</div></div></div>
-      <div class="acontent">
-        <div style="display:flex;flex-direction:column;gap:12px">
-          <div style="background:var(--W);border-radius:var(--r2);border:2px solid var(--coral);padding:18px">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-              <div><div style="font-family:var(--fh);font-size:15px;font-weight:700">Tan Kok Ming · 58 yrs</div><div style="font-size:12px;color:var(--ink3);opacity:0.55;margin-top:2px">Completed 2 hours ago · Score: 28%</div></div>
-              <span class="tag red">Hot Lead</span>
-            </div>
-            <div style="background:var(--ash);border-radius:var(--r);padding:11px;margin-bottom:12px;font-size:13px;color:var(--ink3)"><strong>Gaps:</strong> No niche · No funeral pkg · CPF unknown · No LPA<br><strong>Message:</strong> "I didn't realise how much my family would have to deal with."</div>
-            <div style="display:flex;gap:8px"><button class="btn btn-wa" style="flex:1;font-size:13px;padding:10px">📱 WhatsApp Now</button><button class="btn btn-ghost" style="flex:1;font-size:13px">View Assessment</button></div>
-          </div>
-          <div style="background:var(--W);border-radius:var(--r2);border:2px solid var(--coral);padding:18px">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-              <div><div style="font-family:var(--fh);font-size:15px;font-weight:700">Raj Subramaniam · 52 yrs</div><div style="font-size:12px;color:var(--ink3);opacity:0.55;margin-top:2px">Completed 2 days ago · Score: 35%</div></div>
-              <span class="tag red">Hot Lead</span>
-            </div>
-            <div style="background:var(--ash);border-radius:var(--r);padding:11px;margin-bottom:12px;font-size:13px;color:var(--ink3)"><strong>Gaps:</strong> No niche · No funeral pkg · No will registered<br><strong>Message:</strong> "I want to discuss options for my family."</div>
-            <div style="display:flex;gap:8px"><button class="btn btn-wa" style="flex:1;font-size:13px;padding:10px">📱 WhatsApp Now</button><button class="btn btn-ghost" style="flex:1;font-size:13px">View Assessment</button></div>
-          </div>
-          <div style="background:var(--W);border-radius:var(--r2);border:1.5px solid var(--ash3);padding:18px;opacity:0.7">
-            <div style="display:flex;align-items:center;gap:10px"><div style="flex:1"><div style="font-family:var(--fh);font-size:14px;font-weight:700">Linda Chong · 44 yrs</div><div style="font-size:12px;color:var(--ink3);opacity:0.55;margin-top:2px">Viewed · Score: 51% · No contact yet</div></div><button class="btn btn-ghost" style="font-size:12px">Send Follow-up</button></div>
-          </div>
-        </div>
-      </div>
+    <div class="ascreen" id="as-leads">
+      <div class="atb"><div><div class="at-title">Lead Notifications</div><div class="at-sub">Clients who completed assessment and want to talk</div></div></div>
+      <div class="ac" id="leads-container"><div style="text-align:center;padding:32px;opacity:.5">Loading leads...</div></div>
     </div>
 
-    <!-- Clients -->
-    <div class="ascreen" id="ascreen-clients">
-      <div class="topbar"><div><div class="pt">My Clients</div><div class="ps">Full database — visible to you only</div></div><div class="tr"><button class="btn btn-gold" style="font-size:12px">+ Add Client</button></div></div>
-      <div class="acontent">
-        <div class="tw">
-          <div class="tw-head"><div class="tw-t">All Clients</div><input style="padding:7px 10px;border:1.5px solid var(--ash3);border-radius:var(--r);font-size:12px;outline:none" placeholder="Search..."/></div>
-          <div class="t-scroll">
-            <table>
-              <thead><tr><th>Client</th><th>Age</th><th>Source</th><th>Score</th><th>Niche</th><th>Funeral Pkg</th><th>Priority</th><th></th></tr></thead>
-              <tbody>
-                <tr><td><strong>Tan Kok Ming</strong></td><td>58</td><td><span class="pill gold">Via Link</span></td><td style="color:var(--coral);font-weight:700">28%</td><td><span class="pill red">Missing</span></td><td><span class="pill red">Missing</span></td><td><span class="pill red">Critical</span></td><td><button class="btn btn-gold" style="font-size:11px;padding:5px 10px">Follow Up</button></td></tr>
-                <tr><td><strong>Mary Lim Siew Bee</strong></td><td>65</td><td><span class="pill gray">Direct</span></td><td style="color:var(--coral);font-weight:700">41%</td><td><span class="pill red">Missing</span></td><td><span class="pill green">✓ Done</span></td><td><span class="pill red">Urgent</span></td><td><button class="btn btn-gold" style="font-size:11px;padding:5px 10px">Follow Up</button></td></tr>
-                <tr><td><strong>Raj Subramaniam</strong></td><td>52</td><td><span class="pill gold">Via Link</span></td><td style="color:var(--coral);font-weight:700">35%</td><td><span class="pill red">Missing</span></td><td><span class="pill red">Missing</span></td><td><span class="pill red">Critical</span></td><td><button class="btn btn-gold" style="font-size:11px;padding:5px 10px">Follow Up</button></td></tr>
-                <tr><td><strong>Priya Ramaswamy</strong></td><td>47</td><td><span class="pill gray">Direct</span></td><td style="color:var(--jade);font-weight:700">78%</td><td><span class="pill green">✓ Done</span></td><td><span class="pill green">✓ Done</span></td><td><span class="pill green">On Track</span></td><td><button class="btn btn-ghost" style="font-size:11px;padding:5px 10px">View</button></td></tr>
-              </tbody>
-            </table>
+    <!-- Share Link -->
+    <div class="ascreen" id="as-share-link">
+      <div class="atb"><div><div class="at-title">My Share Link</div><div class="at-sub">All leads tracked to you automatically</div></div></div>
+      <div class="ac">
+        <div class="share-panel" style="margin-bottom:18px">
+          <div class="sp-title">Your Unique Assessment Link</div>
+          <div class="sp-sub">Permanently tied to your agent account</div>
+          <div class="link-box" style="margin-bottom:14px"><div class="link-url" id="myShareLink2">Loading...</div><button class="btn b-ghost b-sm" style="flex-shrink:0;color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.15)" onclick="copyMyLink()">Copy</button></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+            <button class="btn b-sm" style="background:#25D366;color:#fff;font-weight:700" onclick="shareWA()">📱 WhatsApp</button>
+            <button class="btn b-ghost b-sm" style="color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.15)" onclick="copyMyLink()">📋 Copy</button>
           </div>
+          <div class="sp-note">⚡ Clients see only their own score, gaps, and a way to contact you. No pricing, no commission, no other clients.</div>
+        </div>
+        <div style="background:var(--W);border-radius:var(--br2);border:1.5px solid var(--a3);padding:18px">
+          <div style="font-family:var(--fh);font-size:13px;font-weight:700;margin-bottom:12px">WhatsApp Template</div>
+          <div style="background:var(--a);border-radius:var(--br);padding:14px;font-size:13px;color:var(--k3);line-height:1.65;border-left:3px solid var(--g);font-style:italic" id="waTemplate">Loading...</div>
+          <button class="btn b-ghost b-sm" style="margin-top:10px" onclick="copyWATemplate()">Copy Message</button>
         </div>
       </div>
     </div>
 
     <!-- Catalogue -->
-    <div class="ascreen" id="ascreen-catalogue">
-      <div class="topbar"><div><div class="pt">Nirvana Catalogue</div><div class="ps">Agent-only pricing — not visible to clients</div></div></div>
-      <div class="acontent">
-        <div class="alert gold"><div style="font-size:15px">⚑</div><div>Pricing is only visible in the agent portal. Clients see their gaps and contact you — they don't see prices until you present them.</div><div class="ac" onclick="this.parentElement.remove()">✕</div></div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
-          <div style="background:var(--W);border-radius:var(--r2);border:1.5px solid var(--ash3);overflow:hidden"><div style="padding:13px 16px;border-bottom:1px solid var(--ash2);display:flex;align-items:center;gap:9px"><div style="font-size:20px">⛩️</div><div><div style="font-family:var(--fh);font-size:13px;font-weight:700">Columbarium Niches</div><div style="font-size:11px;color:var(--ink3);opacity:0.55">Core product</div></div></div><div style="padding:13px 16px;font-size:13px;display:flex;flex-direction:column;gap:7px"><div style="display:flex;justify-content:space-between"><span>Standard Level 1</span><span style="font-weight:700;color:var(--gold-d)">S$12,800</span></div><div style="display:flex;justify-content:space-between"><span>Standard Level 3</span><span style="font-weight:700;color:var(--gold-d)">S$8,800</span></div><div style="display:flex;justify-content:space-between"><span>Premium Double (Couple)</span><span style="font-weight:700;color:var(--gold-d)">S$22,000</span></div><div style="display:flex;justify-content:space-between"><span>Royal Pagoda Suite</span><span style="font-weight:700;color:var(--gold-d)">S$38,000+</span></div></div></div>
-          <div style="background:var(--W);border-radius:var(--r2);border:1.5px solid var(--ash3);overflow:hidden"><div style="padding:13px 16px;border-bottom:1px solid var(--ash2);display:flex;align-items:center;gap:9px"><div style="font-size:20px">⚰️</div><div><div style="font-family:var(--fh);font-size:13px;font-weight:700">Funeral Packages</div><div style="font-size:11px;color:var(--ink3);opacity:0.55">Removes 30 decisions in 48hrs</div></div></div><div style="padding:13px 16px;font-size:13px;display:flex;flex-direction:column;gap:7px"><div style="display:flex;justify-content:space-between"><span>Harmony (Buddhist)</span><span style="font-weight:700;color:var(--gold-d)">S$5,800</span></div><div style="display:flex;justify-content:space-between"><span>Serenity (Buddhist)</span><span style="font-weight:700;color:var(--gold-d)">S$8,500</span></div><div style="display:flex;justify-content:space-between"><span>Islamic Package</span><span style="font-weight:700;color:var(--gold-d)">S$4,200</span></div><div style="display:flex;justify-content:space-between"><span>Prestige Package</span><span style="font-weight:700;color:var(--gold-d)">S$15,000</span></div></div></div>
-          <div style="background:var(--W);border-radius:var(--r2);border:1.5px solid var(--ash3);overflow:hidden"><div style="padding:13px 16px;border-bottom:1px solid var(--ash2);display:flex;align-items:center;gap:9px"><div style="font-size:20px">📅</div><div><div style="font-family:var(--fh);font-size:13px;font-weight:700">Festival Packages</div><div style="font-size:11px;color:var(--ink3);opacity:0.55">Annual recurring revenue</div></div></div><div style="padding:13px 16px;font-size:13px;display:flex;flex-direction:column;gap:7px"><div style="display:flex;justify-content:space-between"><span>Qingming Basic</span><span style="font-weight:700;color:var(--gold-d)">S$280/yr</span></div><div style="display:flex;justify-content:space-between"><span>Qingming Premium</span><span style="font-weight:700;color:var(--gold-d)">S$580/yr</span></div><div style="display:flex;justify-content:space-between"><span>Hungry Ghost Package</span><span style="font-weight:700;color:var(--gold-d)">S$320/yr</span></div><div style="display:flex;justify-content:space-between"><span>10-Year Bundle</span><span style="font-weight:700;color:var(--gold-d)">S$6,800</span></div></div></div>
+    <div class="ascreen" id="as-catalogue">
+      <div class="atb"><div><div class="at-title">Nirvana Catalogue</div><div class="at-sub">Agent-only pricing — not visible to clients</div></div></div>
+      <div class="ac">
+        <div class="al a-g"><span>⚑</span><div>Pricing is agent-only. Clients see gaps and contact you — they don't see prices until you present them.</div></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">
+          <div style="background:var(--W);border-radius:var(--br2);border:1.5px solid var(--a3);overflow:hidden"><div style="padding:13px 16px;border-bottom:1px solid var(--a2);display:flex;align-items:center;gap:9px"><span style="font-size:20px">⛩️</span><div><div style="font-family:var(--fh);font-size:13px;font-weight:700">Columbarium Niches</div><div style="font-size:11px;color:var(--k3);opacity:.55">Core product · Anchor conversation</div></div></div><div style="padding:13px 16px;font-size:13px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;padding-bottom:7px;border-bottom:1px solid var(--a2)"><span>Standard Level 1</span><span style="font-weight:700;color:var(--gd)">S$12,800</span></div><div style="display:flex;justify-content:space-between;padding-bottom:7px;border-bottom:1px solid var(--a2)"><span>Standard Level 3</span><span style="font-weight:700;color:var(--gd)">S$8,800</span></div><div style="display:flex;justify-content:space-between;padding-bottom:7px;border-bottom:1px solid var(--a2)"><span>Premium Double (Couple)</span><span style="font-weight:700;color:var(--gd)">S$22,000</span></div><div style="display:flex;justify-content:space-between"><span>Royal Pagoda Suite</span><span style="font-weight:700;color:var(--gd)">S$38,000+</span></div></div></div>
+          <div style="background:var(--W);border-radius:var(--br2);border:1.5px solid var(--a3);overflow:hidden"><div style="padding:13px 16px;border-bottom:1px solid var(--a2);display:flex;align-items:center;gap:9px"><span style="font-size:20px">⚰️</span><div><div style="font-family:var(--fh);font-size:13px;font-weight:700">Funeral Packages</div><div style="font-size:11px;color:var(--k3);opacity:.55">Removes 30 decisions in 48 hours</div></div></div><div style="padding:13px 16px;font-size:13px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;padding-bottom:7px;border-bottom:1px solid var(--a2)"><span>Harmony Buddhist</span><span style="font-weight:700;color:var(--gd)">S$5,800</span></div><div style="display:flex;justify-content:space-between;padding-bottom:7px;border-bottom:1px solid var(--a2)"><span>Serenity Buddhist</span><span style="font-weight:700;color:var(--gd)">S$8,500</span></div><div style="display:flex;justify-content:space-between;padding-bottom:7px;border-bottom:1px solid var(--a2)"><span>Islamic Package</span><span style="font-weight:700;color:var(--gd)">S$4,200</span></div><div style="display:flex;justify-content:space-between"><span>Prestige Package</span><span style="font-weight:700;color:var(--gd)">S$15,000</span></div></div></div>
+          <div style="background:var(--W);border-radius:var(--br2);border:1.5px solid var(--a3);overflow:hidden"><div style="padding:13px 16px;border-bottom:1px solid var(--a2);display:flex;align-items:center;gap:9px"><span style="font-size:20px">📅</span><div><div style="font-family:var(--fh);font-size:13px;font-weight:700">Festival Packages</div><div style="font-size:11px;color:var(--k3);opacity:.55">Annual recurring revenue</div></div></div><div style="padding:13px 16px;font-size:13px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;padding-bottom:7px;border-bottom:1px solid var(--a2)"><span>Qingming Basic</span><span style="font-weight:700;color:var(--gd)">S$280/yr</span></div><div style="display:flex;justify-content:space-between;padding-bottom:7px;border-bottom:1px solid var(--a2)"><span>Qingming Premium</span><span style="font-weight:700;color:var(--gd)">S$580/yr</span></div><div style="display:flex;justify-content:space-between"><span>10-Year Bundle</span><span style="font-weight:700;color:var(--gd)">S$6,800</span></div></div></div>
         </div>
       </div>
     </div>
 
-    <!-- Admin -->
-    <div class="ascreen" id="ascreen-admin">
-      <div class="topbar"><div><div class="pt">Admin Console</div><div class="ps">Awesome 313 Agency — agency-wide performance</div></div></div>
-      <div class="acontent">
+    <!-- Admin Console (admin only) -->
+    <div class="ascreen" id="as-admin">
+      <div class="atb"><div><div class="at-title">Admin Console</div><div class="at-sub">Awesome 313 Agency — all agents, all data</div></div><div class="at-right"><button class="btn b-gold b-sm" onclick="openCreateAgent()">+ Create Agent</button></div></div>
+      <div class="ac">
         <div class="stat-grid">
-          <div class="stat-card"><div class="sl">Total Agents</div><div class="sv">8</div><div class="sc up">↑ 2 this quarter</div></div>
-          <div class="stat-card"><div class="sl">Links Sent (Agency)</div><div class="sv">312</div><div class="sc up">↑ 34% MoM</div></div>
-          <div class="stat-card"><div class="sl">Assessments Done</div><div class="sv">187</div><div class="sc up">60% completion</div></div>
-          <div class="stat-card"><div class="sl">Agency Revenue</div><div class="sv">S$124k</div><div class="sc up">↑ 28% MoM</div></div>
+          <div class="stat-card"><div class="stat-lbl">Total Agents</div><div class="stat-val" id="adm-agents">—</div><div class="stat-ch">Active consultants</div></div>
+          <div class="stat-card"><div class="stat-lbl">Total Clients</div><div class="stat-val" id="adm-clients">—</div><div class="stat-ch">Across all agents</div></div>
+          <div class="stat-card"><div class="stat-lbl">Niches Sold</div><div class="stat-val" id="adm-niches">—</div><div class="stat-ch">All agents MTD</div></div>
+          <div class="stat-card"><div class="stat-lbl">Avg Readiness</div><div class="stat-val" id="adm-score">—</div><div class="stat-ch">All clients</div></div>
         </div>
-        <div class="tw">
-          <div class="tw-head"><div class="tw-t">Agent Leaderboard (MTD)</div></div>
-          <div class="t-scroll">
-            <table>
-              <thead><tr><th>Rank</th><th>Agent</th><th>Links Sent</th><th>Leads</th><th>Niches</th><th>Revenue</th></tr></thead>
-              <tbody>
-                <tr><td>🥇</td><td><strong>Lee Hwee Teng</strong> <span style="font-size:11px;color:var(--jade)">(You)</span></td><td>47</td><td>18</td><td>7</td><td style="font-weight:700;color:var(--gold-d)">S$42,800</td></tr>
-                <tr><td>🥈</td><td>Ng Beng Huat</td><td>38</td><td>12</td><td>5</td><td>S$31,200</td></tr>
-                <tr><td>🥉</td><td>Siti Rahimah</td><td>29</td><td>9</td><td>3</td><td>S$19,800</td></tr>
-                <tr><td>4</td><td>David Chua</td><td>22</td><td>6</td><td>2</td><td>S$14,400</td></tr>
-              </tbody>
-            </table>
+
+        <!-- Create Agent Form -->
+        <div class="form-card" id="createAgentForm" style="display:none">
+          <div class="fc-title">Create New Consultant Account</div>
+          <div class="al a-g"><span>📧</span><div>An invitation email will be sent. The consultant uses it to set their password and access the portal.</div></div>
+          <div class="r2">
+            <div class="fg"><label class="lbl">Full Name <span class="req">*</span></label><input class="inp" id="new-agent-name" placeholder="Full name"/></div>
+            <div class="fg"><label class="lbl">Agent Code <span class="req">*</span></label><input class="inp" id="new-agent-code" placeholder="e.g. A313-005"/></div>
+          </div>
+          <div class="fg"><label class="lbl">Email Address <span class="req">*</span></label><input class="inp" id="new-agent-email" placeholder="consultant@email.com" type="email"/></div>
+          <div class="r2">
+            <div class="fg"><label class="lbl">Mobile</label><input class="inp" id="new-agent-mobile" placeholder="+65 9XXX XXXX" type="tel"/></div>
+            <div class="fg"><label class="lbl">Role</label><select class="sel" id="new-agent-role"><option value="consultant">Consultant</option><option value="admin">Admin</option></select></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn b-gold" id="create-agent-btn" onclick="createAgent()">Send Invitation →</button>
+            <button class="btn b-ghost" onclick="document.getElementById('createAgentForm').style.display='none'">Cancel</button>
           </div>
         </div>
+
+        <div class="tw">
+          <div class="tw-head"><div class="tw-title">All Consultants</div></div>
+          <div class="ts"><table><thead><tr><th>Name</th><th>Code</th><th>Role</th><th>Clients</th><th>Status</th><th>Actions</th></tr></thead><tbody id="agentsTableBody"><tr><td colspan="6" style="text-align:center;padding:20px;opacity:.5">Loading...</td></tr></tbody></table></div>
+        </div>
+
+        <div class="tw">
+          <div class="tw-head"><div class="tw-title">All Clients (Agency-wide)</div></div>
+          <div class="ts"><table><thead><tr><th>Client</th><th>Agent</th><th>Score</th><th>Niche</th><th>Funeral Pkg</th><th>Priority</th></tr></thead><tbody id="allClientsBody"><tr><td colspan="6" style="text-align:center;padding:20px;opacity:.5">Loading...</td></tr></tbody></table></div>
+        </div>
       </div>
     </div>
 
-  </div><!-- /agent-main -->
-</div><!-- /view-agent -->
+  </div>
+</div>
 
-<!-- ============================================================
-     CLIENT VIEW
-     ============================================================ -->
+<!-- ════════ CLIENT VIEW ════════ -->
 <div class="view" id="view-client">
-
   <div class="client-nav">
-    <div class="cnav-top">
-      <div class="cbrand">
-        <div class="cbmark">P.</div>
-        <div><div class="cbname">PeaceOut.sg</div><div class="cbtag">"Are you ready to die?"</div></div>
-      </div>
-      <div class="agent-pill" onclick="cshow('contact')">
-        <div class="ap-av">LH</div>
-        <div class="ap-name">From: Lee Hwee Teng</div>
-      </div>
+    <div class="cn-row">
+      <div class="cn-brand"><div class="cn-mark">P.</div><div><div class="cn-name">PeaceOut.sg</div><div class="cn-tag">"Are you ready to die?"</div></div></div>
+      <div class="agent-pill" onclick="cGo('contact')"><div class="ap-av" id="c-agent-av">LH</div><div class="ap-name" id="c-agent-name">Your Consultant</div></div>
     </div>
-    <div class="tab-bar">
-      <div class="ctab on" onclick="cshow('score')">My Score</div>
-      <div class="ctab" onclick="cshow('assessment')">Assessment</div>
-      <div class="ctab" onclick="cshow('gaps')">My Gaps</div>
-      <div class="ctab" onclick="cshow('checklist')">Checklist</div>
-      <div class="ctab" onclick="cshow('learn')">Learn More</div>
-      <div class="ctab" onclick="cshow('contact')">Talk to Agent</div>
+    <div class="tabbar">
+      <div class="ctab on" onclick="cGo('home')">Home</div>
+      <div class="ctab" onclick="cGo('checklist')">Checklist</div>
+      <div class="ctab" onclick="cGo('gaps')">My Gaps</div>
+      <div class="ctab" onclick="cGo('profile')">My Profile</div>
+      <div class="ctab" onclick="cGo('wishes')">Final Wishes</div>
+      <div class="ctab" onclick="cGo('contact')">Talk to Agent</div>
     </div>
   </div>
+  <div class="sync-badge sync-ok" id="syncBadge"><div class="sync-dot sdot-ok" id="syncDot"></div><span id="syncText">Synced to cloud ✓</span></div>
 
-  <div class="client-body">
-
-    <!-- SCORE -->
-    <div class="cscreen on" id="cscreen-score">
-      <div class="score-hero">
-        <div class="sh-eyebrow">⚠ Your Afterlife Readiness</div>
-        <div class="sh-title">Are your loved ones<br>truly protected?</div>
-        <div class="sh-sub">Lee has prepared a personalised readiness check. Here's where you stand — and what your family faces if something happened tonight.</div>
-        <div class="score-ring-wrap">
-          <svg width="130" height="130" viewBox="0 0 130 130">
-            <circle cx="65" cy="65" r="55" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="10"/>
-            <circle cx="65" cy="65" r="55" fill="none" stroke="#C9A84C" stroke-width="10" stroke-dasharray="345" stroke-dashoffset="249" stroke-linecap="round"/>
-          </svg>
-          <div class="sri"><div class="snum" style="color:var(--gold)">28%</div><div class="slbl">Ready</div></div>
+  <div class="sbody" id="clientScrollBody">
+    <div class="scr on" id="cs-home">
+      <div class="shero">
+        <div class="s-top">
+          <div><div style="font-size:10px;color:var(--g);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px">Readiness Score</div><div class="s-name" id="c-sname">Welcome</div><div class="s-sub" id="c-ssub">Loading your data...</div></div>
+          <div class="srw" id="c-srw"><svg width="90" height="90" viewBox="0 0 90 90"><circle cx="45" cy="45" r="38" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="7"/><circle id="c-sarc" cx="45" cy="45" r="38" fill="none" stroke="#C9A84C" stroke-width="7" stroke-dasharray="239" stroke-dashoffset="239" stroke-linecap="round"/></svg><div class="sri"><div class="sn" id="c-sn">0%</div><div class="sl">Ready</div></div></div>
         </div>
-        <div class="verdict bad">⚠ Critical — Your family is at risk</div>
-        <div class="impact-box">
-          <div class="impact-title">If something happened to you today...</div>
-          <div class="impact-item"><div class="impact-dot"></div>No resting place arranged — family scrambles under grief</div>
-          <div class="impact-item"><div class="impact-dot"></div>30+ funeral decisions needed in 48 hours</div>
-          <div class="impact-item"><div class="impact-dot"></div>CPF funds may be frozen for months</div>
-          <div class="impact-item"><div class="impact-dot"></div>No LPA means court order needed to manage your accounts</div>
+        <div class="cbars">
+          <div class="crow"><div class="clbl">⛩ Nirvana Arrangement</div><div class="ctrack"><div class="cfill f1" id="c-cf1" style="width:0%"></div></div><div class="cpct" id="c-cp1">0%</div></div>
+          <div class="crow"><div class="clbl">⚖ Legal & Will</div><div class="ctrack"><div class="cfill f2" id="c-cf2" style="width:0%"></div></div><div class="cpct" id="c-cp2">0%</div></div>
+          <div class="crow"><div class="clbl">💰 CPF & Finance</div><div class="ctrack"><div class="cfill f3" id="c-cf3" style="width:0%"></div></div><div class="cpct" id="c-cp3">0%</div></div>
+          <div class="crow"><div class="clbl">🏠 Property</div><div class="ctrack"><div class="cfill f4" id="c-cf4" style="width:0%"></div></div><div class="cpct" id="c-cp4">0%</div></div>
+          <div class="crow"><div class="clbl">💻 Digital</div><div class="ctrack"><div class="cfill f5" id="c-cf5" style="width:0%"></div></div><div class="cpct" id="c-cp5">0%</div></div>
         </div>
+        <div class="vchip vr" id="c-vchip">⚠ Not started</div>
       </div>
-      <div style="padding:20px 16px">
-        <button class="sticky-cta-btn" style="margin-bottom:10px" onclick="cshow('contact')">📱 Talk to Lee About This Now</button>
-        <button class="btn btn-ghost btn-w" onclick="cshow('gaps')">See My Full Gap Report →</button>
+      <div style="padding:14px 16px 6px">
+        <div class="al a-r" id="c-halert"><span style="font-size:15px;flex-shrink:0">⚠</span><div id="c-halertTxt">Fill in your profile to get your personalised readiness score.</div></div>
       </div>
-      <div style="padding:0 16px">
-        <div style="font-family:var(--fh);font-size:16px;font-weight:800;margin-bottom:14px">Your critical gaps</div>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
-          <div style="display:flex;align-items:center;gap:11px;padding:13px 14px;background:var(--coral-l);border:1.5px solid rgba(196,75,58,0.25);border-radius:14px;cursor:pointer" onclick="cshow('gaps')"><div style="font-size:22px">⛩️</div><div style="flex:1"><div style="font-size:10px;font-weight:700;color:var(--coral);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px">🔥 Critical</div><div style="font-size:13px;font-weight:600;color:var(--ink)">No columbarium niche secured</div></div><div style="color:var(--coral)">›</div></div>
-          <div style="display:flex;align-items:center;gap:11px;padding:13px 14px;background:var(--coral-l);border:1.5px solid rgba(196,75,58,0.25);border-radius:14px;cursor:pointer" onclick="cshow('gaps')"><div style="font-size:22px">⚰️</div><div style="flex:1"><div style="font-size:10px;font-weight:700;color:var(--coral);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px">🔥 Critical</div><div style="font-size:13px;font-weight:600;color:var(--ink)">No funeral service package</div></div><div style="color:var(--coral)">›</div></div>
-          <div style="display:flex;align-items:center;gap:11px;padding:13px 14px;background:#FFFBF0;border:1.5px solid #F0DFA0;border-radius:14px;cursor:pointer" onclick="cshow('gaps')"><div style="font-size:22px">📋</div><div style="flex:1"><div style="font-size:10px;font-weight:700;color:#9A7200;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px">⚑ High</div><div style="font-size:13px;font-weight:600;color:var(--ink)">CPF nomination not updated</div></div><div style="color:#9A7200">›</div></div>
-          <div style="display:flex;align-items:center;gap:11px;padding:13px 14px;background:#FFFBF0;border:1.5px solid #F0DFA0;border-radius:14px;cursor:pointer" onclick="cshow('gaps')"><div style="font-size:22px">⚖️</div><div style="flex:1"><div style="font-size:10px;font-weight:700;color:#9A7200;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px">⚑ High</div><div style="font-size:13px;font-weight:600;color:var(--ink)">No LPA registered</div></div><div style="color:#9A7200">›</div></div>
-          <div style="display:flex;align-items:center;gap:11px;padding:13px 14px;background:#FFFBF0;border:1.5px solid #F0DFA0;border-radius:14px;cursor:pointer" onclick="cshow('gaps')"><div style="font-size:22px">🏠</div><div style="flex:1"><div style="font-size:10px;font-weight:700;color:#9A7200;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px">⚑ High</div><div style="font-size:13px;font-weight:600;color:var(--ink)">HDB disposition unclear</div></div><div style="color:#9A7200">›</div></div>
+      <div class="p16">
+        <div class="g2" style="margin-bottom:14px">
+          <div class="card" onclick="cGo('profile')"><div class="ci">👤</div><div class="ct">My Profile</div><div class="cd">Fill in your details — score updates live</div></div>
+          <div class="card" onclick="cGo('checklist')"><div class="ci">☑️</div><div class="ct">Checklist</div><div class="cd">Tick off what you've settled</div></div>
+          <div class="card" onclick="cGo('gaps')"><div class="ci">⚠️</div><div class="ct">My Gaps</div><div class="cd">What your family still faces</div></div>
+          <div class="card" onclick="cGo('contact')"><div class="ci">📱</div><div class="ct">Talk to My Agent</div><div class="cd">WhatsApp your consultant now</div></div>
         </div>
-        <div style="font-family:var(--fh);font-size:14px;font-weight:700;color:var(--jade);margin-bottom:12px">✓ What you've already settled</div>
-        <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:24px">
-          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--jade)"><div style="width:20px;height:20px;border-radius:50%;background:var(--jade-l);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0">✓</div>Valid will drafted and witnessed</div>
-          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--jade)"><div style="width:20px;height:20px;border-radius:50%;background:var(--jade-l);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0">✓</div>Joint bank account set up for family</div>
-          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--jade)"><div style="width:20px;height:20px;border-radius:50%;background:var(--jade-l);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0">✓</div>HDB flat ownership documented</div>
-        </div>
-        <button class="sticky-cta-btn" style="margin-bottom:24px" onclick="cshow('contact')">📱 Contact Lee to Close My Gaps</button>
+        <div style="font-family:var(--fh);font-size:15px;font-weight:700;margin-bottom:10px">Priority Actions</div>
+        <div id="c-plist"><div style="text-align:center;padding:24px 0;opacity:.5">Loading...</div></div>
       </div>
     </div>
 
-    <!-- ASSESSMENT QUIZ -->
-    <div class="cscreen" id="cscreen-assessment">
-      <div class="quiz-wrap">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div style="font-size:12px;color:var(--ink3);opacity:0.5" id="qLabel">Question 1 of 8</div>
-          <div style="font-size:12px;color:var(--gold);font-weight:600" id="qScorePrev">Score so far: 0%</div>
+    <div class="scr" id="cs-checklist">
+      <div class="msb"><div><div class="msbn" id="c-cl-score">0%</div><div class="msbl">Readiness</div></div><div class="msbbar"><div class="msbfill" id="c-cl-bar" style="width:0%"></div></div></div>
+      <div class="shd"><h2>Your Checklist</h2><p>Tick items as you settle them — synced to cloud automatically.</p></div>
+      <div class="p16 pb24" id="c-cl-container"></div>
+      <div style="padding:0 16px 24px"><button class="sctabtn" onclick="cGo('contact')">📱 Get Help From My Consultant</button></div>
+    </div>
+
+    <div class="scr" id="cs-gaps">
+      <div class="msb"><div><div class="msbn" id="c-gap-score">0%</div><div class="msbl">Readiness</div></div><div class="msbbar"><div class="msbfill" id="c-gap-bar" style="width:0%"></div></div></div>
+      <div class="shd"><h2>Your Readiness Gaps</h2><p>Tap each item to understand what it means for your family.</p></div>
+      <div class="p16 pb24" id="c-gap-container"></div>
+      <div style="padding:0 16px 24px"><button class="sctabtn" onclick="cGo('contact')">📱 Contact My Consultant</button></div>
+    </div>
+
+    <div class="scr" id="cs-profile">
+      <div class="shd"><h2>My Profile</h2><p>All changes sync to the cloud automatically.</p></div>
+      <div class="p16 pb24">
+        <div class="al a-j"><span>☁️</span><div>Your data is saved securely on Singapore servers (PDPA compliant). Your consultant can see your readiness score and checklist — not your personal messages or private wishes.</div></div>
+        <div class="fg"><label class="lbl">Full Name</label><input class="inp" id="cp-name" oninput="scheduleSync()"/></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="fg"><label class="lbl">Date of Birth</label><input class="inp" id="cp-dob" type="date" oninput="scheduleSync()"/></div>
+          <div class="fg"><label class="lbl">Gender</label><select class="sel" id="cp-gender" onchange="scheduleSync()"><option value="">Select</option><option>Male</option><option>Female</option></select></div>
         </div>
-        <div class="quiz-pb"><div class="quiz-pf" id="qProg" style="width:12%"></div></div>
-        <div id="qBox"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="fg"><label class="lbl">Religion</label><select class="sel" id="cp-religion" onchange="scheduleSync()"><option value="">Select</option><option>Chinese — Buddhist / Taoist</option><option>Chinese — Christian</option><option>Malay — Muslim</option><option>Indian — Hindu</option><option>Indian — Christian</option><option>Other</option></select></div>
+          <div class="fg"><label class="lbl">Marital Status</label><select class="sel" id="cp-marital" onchange="scheduleSync()"><option value="">Select</option><option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option></select></div>
+        </div>
+        <div class="fg"><label class="lbl">Address</label><input class="inp" id="cp-address" oninput="scheduleSync()"/></div>
+        <div style="height:1px;background:var(--a2);margin:16px 0"></div>
+        <div style="font-family:var(--fh);font-size:14px;font-weight:700;margin-bottom:12px">Nirvana Products</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+          <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--a3);border-radius:var(--br);cursor:pointer"><input type="checkbox" id="cp-niche" onchange="scheduleSync();recalcClient()"><div><div style="font-size:14px;font-weight:500">⛩️ Columbarium Niche</div><div style="font-size:12px;color:var(--k3);opacity:.55">Pre-arranged at Nirvana Memorial Garden</div></div></label>
+          <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--a3);border-radius:var(--br);cursor:pointer"><input type="checkbox" id="cp-funeral" onchange="scheduleSync();recalcClient()"><div><div style="font-size:14px;font-weight:500">⚰️ Funeral Service Package</div><div style="font-size:12px;color:var(--k3);opacity:.55">Pre-arranged — removes 30+ decisions from family</div></div></label>
+          <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--a3);border-radius:var(--br);cursor:pointer"><input type="checkbox" id="cp-qingming" onchange="scheduleSync();recalcClient()"><div><div style="font-size:14px;font-weight:500">📅 Qingming Festival Package</div><div style="font-size:12px;color:var(--k3);opacity:.55">Annual tomb-sweeping at Nirvana</div></div></label>
+        </div>
+        <div style="height:1px;background:var(--a2);margin:16px 0"></div>
+        <div style="font-family:var(--fh);font-size:14px;font-weight:700;margin-bottom:12px">Legal Status</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+          <label style="display:flex;align-items:center;gap:8px;padding:11px 13px;border:1.5px solid var(--a3);border-radius:var(--br);cursor:pointer;font-size:13px"><input type="checkbox" id="cp-will" onchange="scheduleSync();recalcClient()"> Valid Will</label>
+          <label style="display:flex;align-items:center;gap:8px;padding:11px 13px;border:1.5px solid var(--a3);border-radius:var(--br);cursor:pointer;font-size:13px"><input type="checkbox" id="cp-lpa" onchange="scheduleSync();recalcClient()"> LPA Registered</label>
+          <label style="display:flex;align-items:center;gap:8px;padding:11px 13px;border:1.5px solid var(--a3);border-radius:var(--br);cursor:pointer;font-size:13px"><input type="checkbox" id="cp-cpf" onchange="scheduleSync();recalcClient()"> CPF Nomination</label>
+          <label style="display:flex;align-items:center;gap:8px;padding:11px 13px;border:1.5px solid var(--a3);border-radius:var(--br);cursor:pointer;font-size:13px"><input type="checkbox" id="cp-insurance" onchange="scheduleSync();recalcClient()"> Life Insurance</label>
+          <label style="display:flex;align-items:center;gap:8px;padding:11px 13px;border:1.5px solid var(--a3);border-radius:var(--br);cursor:pointer;font-size:13px"><input type="checkbox" id="cp-digital" onchange="scheduleSync();recalcClient()"> Digital Documented</label>
+          <label style="display:flex;align-items:center;gap:8px;padding:11px 13px;border:1.5px solid var(--a3);border-radius:var(--br);cursor:pointer;font-size:13px"><input type="checkbox" id="cp-amd" onchange="scheduleSync();recalcClient()"> AMD / Organ Donor</label>
+        </div>
+        <button class="btn b-gold b-w" style="padding:13px;font-size:14px" onclick="forceSyncNow()">☁️ Save & Sync Now</button>
       </div>
     </div>
 
-    <!-- GAPS -->
-    <div class="cscreen" id="cscreen-gaps">
-      <div class="msb">
-        <div><div class="msb-score">28%</div><div class="msb-lbl">Readiness</div></div>
-        <div class="msb-bar"><div class="msb-fill"></div></div>
-        <div class="msb-cta" onclick="cshow('contact')">Fix this →</div>
-      </div>
-      <div class="gaps-section">
-        <div class="section-title">Your Readiness Gaps</div>
-        <div class="section-sub">Tap each item to understand what it means for your family.</div>
-
-        <div class="gap-card critical" onclick="toggleG(this)">
-          <div class="gc-row"><div class="gc-ico">⛩️</div><div class="gc-mid"><div class="gc-pri c">🔥 Critical</div><div class="gc-name">No Columbarium Niche Secured</div></div><div class="gc-chev">›</div></div>
-          <div class="gc-why">Your family won't know where to bring your remains — and will decide under grief and time pressure.</div>
-          <div class="gc-expand"><div class="gc-detail">In Singapore, over 80% of the deceased are cremated. A columbarium niche is your permanent resting place — where your ashes are kept and your family visits to pay respects.<br><br>Without one pre-arranged, your family must find a niche within days — under extreme urgency and grief. Prices are higher, choices are limited, and every decision is made at the worst possible moment.<br><br><strong>Securing a niche today</strong> means your preferred location is reserved, today's price is locked in, and your family makes zero decisions about your resting place when you pass.</div><button class="gc-btn coral" onclick="goContact(event,'niche')">📱 Ask Lee About Niche Options</button></div>
-        </div>
-
-        <div class="gap-card critical" onclick="toggleG(this)">
-          <div class="gc-row"><div class="gc-ico">⚰️</div><div class="gc-mid"><div class="gc-pri c">🔥 Critical</div><div class="gc-name">No Funeral Service Package</div></div><div class="gc-chev">›</div></div>
-          <div class="gc-why">Your family faces over 30 decisions in 48 hours — when they're exhausted and heartbroken.</div>
-          <div class="gc-expand"><div class="gc-detail">A funeral involves the wake venue, tentage, seating, hearse, embalming, ceremony, officiant, flowers, food, joss paper — and more. Every decision must be made within 48 hours of death.<br><br>A pre-arranged package removes every one of those decisions. Your family makes one phone call, and everything is handled exactly as you specified — at the price you locked in today.<br><br><strong>Without a package:</strong> families often overspend out of guilt, make decisions they later regret, and sometimes argue during the most painful moment they've ever experienced.</div><button class="gc-btn coral" onclick="goContact(event,'funeral')">📱 Ask Lee About Funeral Packages</button></div>
-        </div>
-
-        <div class="gap-card high" onclick="toggleG(this)">
-          <div class="gc-row"><div class="gc-ico">📋</div><div class="gc-mid"><div class="gc-pri h">⚑ High Priority</div><div class="gc-name">CPF Nomination Not Updated</div></div><div class="gc-chev">›</div></div>
-          <div class="gc-why">Your CPF savings cannot go through your will. Without a nomination, the CPF Board decides — not you.</div>
-          <div class="gc-expand"><div class="gc-detail">Your CPF money is completely separate from your will. It can only be paid to people you have specifically nominated. Without a valid nomination, CPF distributes your funds under Singapore's Intestate Succession Act — which may not match your wishes and takes significantly longer.<br><br><strong>Your nomination becomes invalid</strong> after marriage or divorce. Many people never update it. Updating takes 10 minutes at cpf.gov.sg — and it's free.</div><button class="gc-btn gold" onclick="goContact(event,'cpf')">💬 Ask Lee for CPF Help</button></div>
-        </div>
-
-        <div class="gap-card high" onclick="toggleG(this)">
-          <div class="gc-row"><div class="gc-ico">⚖️</div><div class="gc-mid"><div class="gc-pri h">⚑ High Priority</div><div class="gc-name">No Lasting Power of Attorney (LPA)</div></div><div class="gc-chev">›</div></div>
-          <div class="gc-why">If you lose mental capacity, your family has no legal authority to manage your money or make decisions for you.</div>
-          <div class="gc-expand"><div class="gc-detail">An LPA appoints a trusted person to act on your behalf if you lose mental capacity — due to stroke, dementia, or accident. Without one, your family must apply to court — costing thousands of dollars and taking months, while dealing with your medical situation simultaneously.<br><br>Register at opg.gov.sg. The basic LPA Form 1 costs just S$75. It is one of the most important documents you will ever sign.</div><button class="gc-btn gold" onclick="goContact(event,'lpa')">💬 Ask Lee About LPA</button></div>
-        </div>
-
-        <div class="gap-card high" onclick="toggleG(this)">
-          <div class="gc-row"><div class="gc-ico">🏠</div><div class="gc-mid"><div class="gc-pri h">⚑ High Priority</div><div class="gc-name">HDB Flat Disposition Unclear</div></div><div class="gc-chev">›</div></div>
-          <div class="gc-why">Your HDB flat may not go to who you think. Joint tenancy and tenancy-in-common follow very different rules.</div>
-          <div class="gc-expand"><div class="gc-detail">Under <strong>Joint Tenancy</strong>, your flat passes automatically to the surviving co-owner — your will has no effect on this. Under <strong>Tenancy-in-Common</strong>, your share must go through your will or intestate laws.<br><br>Many Singaporeans assume their flat "goes to the family" — but this depends entirely on your ownership structure. Check your title deed and ensure your will explicitly addresses your property.</div><button class="gc-btn jade" onclick="goContact(event,'hdb')">💬 Ask Lee About HDB Planning</button></div>
-        </div>
-
-        <div class="gap-card medium" onclick="toggleG(this)">
-          <div class="gc-row"><div class="gc-ico">📅</div><div class="gc-mid"><div class="gc-pri m">● Medium</div><div class="gc-name">No Festival Package Arranged</div></div><div class="gc-chev">›</div></div>
-          <div class="gc-why">Annual traditions like Qingming can be pre-arranged so your family honours you without the hassle.</div>
-          <div class="gc-expand"><div class="gc-detail">For Chinese-Buddhist and Taoist families, Qingming — tomb-sweeping — is an annual tradition of deep cultural importance. A pre-arranged festival package at Nirvana Memorial Garden means offerings, joss paper, flowers, and ceremony are handled each year. Your family simply shows up.</div><button class="gc-btn jade" onclick="goContact(event,'festival')">💬 Ask About Festival Packages</button></div>
-        </div>
-
-        <div class="gap-card medium" onclick="toggleG(this)">
-          <div class="gc-row"><div class="gc-ico">💻</div><div class="gc-mid"><div class="gc-pri m">● Medium</div><div class="gc-name">Digital Assets Not Documented</div></div><div class="gc-chev">›</div></div>
-          <div class="gc-why">Bank apps, social accounts, crypto — your family may not be able to access or close these without your instructions.</div>
-          <div class="gc-expand"><div class="gc-detail">When you pass, your digital life doesn't disappear. Social accounts remain active. Subscriptions keep charging. Banking apps lock. If you hold cryptocurrency without leaving instructions, those assets could be permanently lost.<br><br>Documenting your digital accounts — even a simple list — is one of the simplest gifts you can give your family. It costs nothing.</div><button class="gc-btn jade" onclick="goContact(event,'digital')">💬 Ask Lee for Guidance</button></div>
-        </div>
-
-        <div class="gap-card done-card" onclick="toggleG(this)">
-          <div class="gc-row"><div class="gc-ico">📜</div><div class="gc-mid"><div class="gc-pri d">✓ Settled</div><div class="gc-name done">Valid Will Drafted</div></div><div class="gc-chev">›</div></div>
-          <div class="gc-expand"><div class="gc-detail" style="color:var(--jade)">Well done — you have a will. Make sure it's been reviewed in the last 2 years and that it specifically addresses your HDB flat. Consider registering it with the Singapore Wills Registry so your family can easily locate it after you're gone.</div></div>
-        </div>
-      </div>
-      <div style="padding:0 16px 28px"><button class="sticky-cta-btn" onclick="cshow('contact')">📱 Contact Lee to Address These Gaps</button></div>
-    </div>
-
-    <!-- CHECKLIST -->
-    <div class="cscreen" id="cscreen-checklist">
-      <div class="msb"><div><div class="msb-score">28%</div><div class="msb-lbl">Readiness</div></div><div class="msb-bar"><div class="msb-fill"></div></div><div class="msb-cta" onclick="cshow('contact')">Fix this →</div></div>
-      <div style="padding:20px 16px 8px"><div class="section-title">Your Readiness Checklist</div><div class="section-sub">Track what's done. Tick items off as you settle them.</div></div>
-      <div style="padding:0 16px 24px">
-        <div class="cl-section">
-          <div class="cls-head"><div class="cls-t">⛩️ Afterlife Arrangement</div><div class="cls-p">0/2 done</div></div>
-          <div class="cl-item" onclick="ctick(this)"><div class="cl-box"></div><div class="cl-lbl">Columbarium niche at Nirvana Memorial Garden</div><div class="cl-tag r">🔥 Critical</div></div>
-          <div class="cl-item" onclick="ctick(this)"><div class="cl-box"></div><div class="cl-lbl">Funeral service package pre-arranged</div><div class="cl-tag r">🔥 Critical</div></div>
-        </div>
-        <div class="cl-section">
-          <div class="cls-head"><div class="cls-t">📅 Festival & Remembrance</div><div class="cls-p">0/2 done</div></div>
-          <div class="cl-item" onclick="ctick(this)"><div class="cl-box"></div><div class="cl-lbl">Qingming annual festival package</div><div class="cl-tag g">Important</div></div>
-          <div class="cl-item" onclick="ctick(this)"><div class="cl-box"></div><div class="cl-lbl">Hungry Ghost / other festival package</div><div class="cl-tag gr">Optional</div></div>
-        </div>
-        <div class="cl-section">
-          <div class="cls-head"><div class="cls-t">⚖️ Legal</div><div class="cls-p">1/4 done</div></div>
-          <div class="cl-item"><div class="cl-box chk"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,8 8,2" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></div><div class="cl-lbl done">Valid will drafted and witnessed</div><div class="cl-tag gn">Done</div></div>
-          <div class="cl-item" onclick="ctick(this)"><div class="cl-box"></div><div class="cl-lbl">Register Lasting Power of Attorney (LPA)</div><div class="cl-tag r">Priority</div></div>
-          <div class="cl-item" onclick="ctick(this)"><div class="cl-box"></div><div class="cl-lbl">Will registered with Singapore Wills Registry</div><div class="cl-tag g">Important</div></div>
-          <div class="cl-item" onclick="ctick(this)"><div class="cl-box"></div><div class="cl-lbl">Executor formally named</div><div class="cl-tag gr">Optional</div></div>
-        </div>
-        <div class="cl-section">
-          <div class="cls-head"><div class="cls-t">💰 CPF & Finance</div><div class="cls-p">1/3 done</div></div>
-          <div class="cl-item" onclick="ctick(this)"><div class="cl-box"></div><div class="cl-lbl">CPF nomination updated</div><div class="cl-tag r">Priority</div></div>
-          <div class="cl-item"><div class="cl-box chk"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,8 8,2" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></div><div class="cl-lbl done">Joint bank account set up</div><div class="cl-tag gn">Done</div></div>
-          <div class="cl-item" onclick="ctick(this)"><div class="cl-box"></div><div class="cl-lbl">Life insurance beneficiaries reviewed</div><div class="cl-tag g">Important</div></div>
-        </div>
-        <div class="cl-section">
-          <div class="cls-head"><div class="cls-t">🏠 Property & Assets</div><div class="cls-p">1/3 done</div></div>
-          <div class="cl-item"><div class="cl-box chk"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,8 8,2" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></div><div class="cl-lbl done">HDB flat details documented</div><div class="cl-tag gn">Done</div></div>
-          <div class="cl-item" onclick="ctick(this)"><div class="cl-box"></div><div class="cl-lbl">HDB disposition in will</div><div class="cl-tag g">Important</div></div>
-          <div class="cl-item" onclick="ctick(this)"><div class="cl-box"></div><div class="cl-lbl">Digital accounts documented</div><div class="cl-tag g">Important</div></div>
-        </div>
-        <div class="cl-section">
-          <div class="cls-head"><div class="cls-t">💌 Final Wishes</div><div class="cls-p">0/3 done</div></div>
-          <div class="cl-item" onclick="ctick(this)"><div class="cl-box"></div><div class="cl-lbl">Funeral preferences written down</div><div class="cl-tag g">Important</div></div>
-          <div class="cl-item" onclick="ctick(this)"><div class="cl-box"></div><div class="cl-lbl">Personal messages for loved ones</div><div class="cl-tag gr">Optional</div></div>
-          <div class="cl-item" onclick="ctick(this)"><div class="cl-box"></div><div class="cl-lbl">Medical / end-of-life preferences</div><div class="cl-tag gr">Optional</div></div>
-        </div>
-        <button class="sticky-cta-btn" style="margin-top:4px" onclick="cshow('contact')">📱 Get Help Completing My Checklist</button>
+    <div class="scr" id="cs-wishes">
+      <div class="shd"><h2>Final Wishes</h2><p>Private — only released to your family on activation. Your consultant cannot see these.</p></div>
+      <div class="p16 pb24">
+        <div class="al a-r"><span>🔒</span><div>This section is <strong>completely private</strong>. Not even your consultant can see your final wishes. Only your designated executor can access these.</div></div>
+        <div class="fg"><label class="lbl">Funeral Preferences</label><textarea class="inp" id="cw-funeral" style="min-height:90px;line-height:1.5;resize:vertical" placeholder="e.g. Simple Buddhist ceremony, 3-night wake at void deck, white flowers..." oninput="scheduleWishSync()"></textarea></div>
+        <div class="fg"><label class="lbl">Message to Spouse / Partner</label><textarea class="inp" id="cw-spouse" style="min-height:120px;line-height:1.5;resize:vertical" placeholder="Write your personal message here..." oninput="scheduleWishSync()"></textarea></div>
+        <div class="fg"><label class="lbl">Message to Children / Family</label><textarea class="inp" id="cw-family" style="min-height:120px;line-height:1.5;resize:vertical" placeholder="Write your message..." oninput="scheduleWishSync()"></textarea></div>
+        <div class="fg"><label class="lbl">Medical Wishes</label><textarea class="inp" id="cw-medical" style="min-height:80px;line-height:1.5;resize:vertical" placeholder="e.g. Do not use extraordinary measures if terminally ill. AMD registered." oninput="scheduleWishSync()"></textarea></div>
+        <div class="fg"><label class="lbl">Personal Item Distribution</label><textarea class="inp" id="cw-items" style="min-height:100px;line-height:1.5;resize:vertical" placeholder="e.g. Rolex to son Wei Han, jewellery to daughter Jing Yi..." oninput="scheduleWishSync()"></textarea></div>
+        <button class="btn b-gold b-w" style="padding:13px" onclick="forceWishSyncNow()">🔒 Save Final Wishes</button>
+        <div style="font-size:11px;color:var(--k3);opacity:.45;text-align:center;margin-top:10px">Encrypted · Agent cannot access · Released only on executor activation</div>
       </div>
     </div>
 
-    <!-- LEARN MORE -->
-    <div class="cscreen" id="cscreen-learn">
-      <div style="padding:20px 16px 8px"><div class="section-title">Why This Matters</div><div class="section-sub">Honest answers to what most Singaporeans have never been told.</div></div>
-      <div style="padding:0 16px 24px">
-        <div class="edu-card" onclick="toggleE(this)"><div class="edu-top"><div class="edu-ico">⛩️</div><div class="edu-t">Why do I need a columbarium niche?</div><div class="edu-chev">›</div></div><div class="edu-body">In Singapore, over 80% of the deceased are cremated. A niche is your permanent resting place. Without one pre-arranged, your family must find one urgently under grief — at higher prices with fewer choices.<div class="edu-hl">Securing a niche today means your family makes zero decisions about your resting place when you pass. That is a profound gift.</div></div></div>
-        <div class="edu-card" onclick="toggleE(this)"><div class="edu-top"><div class="edu-ico">⚰️</div><div class="edu-t">What does a funeral package include?</div><div class="edu-chev">›</div></div><div class="edu-body">Wake venue, tentage, chairs, hearse, embalming, cremation, ceremony officiant, flowers, joss paper, meals — all decided in advance, all paid for at today's price. Packages are tailored to your religion (Buddhist, Islamic, Christian, Hindu).<div class="edu-hl">Without a package, families overspend out of guilt and make rushed decisions they later regret — in the hardest 48 hours of their lives.</div></div></div>
-        <div class="edu-card" onclick="toggleE(this)"><div class="edu-top"><div class="edu-ico">📋</div><div class="edu-t">What happens to my CPF when I die?</div><div class="edu-chev">›</div></div><div class="edu-body">Your CPF is not covered by your will. It can only be paid to nominated beneficiaries. Without a valid nomination, CPF distributes under intestate law — which may not match your wishes. Your nomination also becomes invalid after marriage or divorce.<div class="edu-hl">Updating your CPF nomination takes 10 minutes at cpf.gov.sg. It's free. Don't leave this undone.</div></div></div>
-        <div class="edu-card" onclick="toggleE(this)"><div class="edu-top"><div class="edu-ico">⚖️</div><div class="edu-t">What is an LPA and do I need one?</div><div class="edu-chev">›</div></div><div class="edu-body">A Lasting Power of Attorney appoints someone to manage your finances and make welfare decisions if you lose mental capacity. Without one, your family needs a costly court order — taking months, costing thousands.<div class="edu-hl">An LPA costs S$75 to register at opg.gov.sg. It's one of the most important documents you'll ever sign.</div></div></div>
-        <div class="edu-card" onclick="toggleE(this)"><div class="edu-top"><div class="edu-ico">🏠</div><div class="edu-t">Does my HDB flat automatically go to my family?</div><div class="edu-chev">›</div></div><div class="edu-body">Under Joint Tenancy: yes, it passes to the surviving co-owner automatically — your will has no effect. Under Tenancy-in-Common: your share goes through your will or intestate law. Many people don't know which type they have.<div class="edu-hl">Check your title deed on the HDB portal — it takes 5 minutes. Then make sure your will addresses it explicitly.</div></div></div>
-        <div class="edu-card" onclick="toggleE(this)"><div class="edu-top"><div class="edu-ico">📅</div><div class="edu-t">What is Qingming and why pre-arrange it?</div><div class="edu-chev">›</div></div><div class="edu-body">Qingming (清明) is the annual Chinese tomb-sweeping festival — a deeply important cultural and spiritual tradition for Chinese-Buddhist and Taoist families. A pre-arranged package at Nirvana handles all offerings, joss paper, flowers, and ceremony each year. Your family simply shows up.<div class="edu-hl">This is about honouring your ancestors the right way — without burdening your children with logistics.</div></div></div>
-        <div class="edu-card" onclick="toggleE(this)"><div class="edu-top"><div class="edu-ico">📜</div><div class="edu-t">I have a will — am I fully covered?</div><div class="edu-chev">›</div></div><div class="edu-body">A will is essential but it doesn't cover your CPF (needs a separate nomination), your life insurance (beneficiary designation controls this), or your HDB under joint tenancy. And even with a will, if you haven't arranged a niche and funeral package, your family still faces enormous burden.<div class="edu-hl">A will is the foundation — not the whole house. The other gaps still need to be closed.</div></div></div>
-        <div style="margin-top:8px"><button class="sticky-cta-btn" onclick="cshow('contact')">📱 Talk to Lee About My Plan</button></div>
+    <div class="scr" id="cs-contact">
+      <div class="shd"><h2>Talk to Your Consultant</h2><p>Ready to help you close every gap — no pressure.</p></div>
+      <div class="p16 pb24">
+        <div style="background:var(--k2);border-radius:var(--br2);padding:20px;margin-bottom:14px">
+          <div style="width:50px;height:50px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:var(--k2);margin-bottom:10px" id="c-contact-av">LH</div>
+          <div style="font-family:var(--fh);font-size:19px;font-weight:800;color:#fff;margin-bottom:3px" id="c-contact-name">Your Consultant</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:16px">Awesome 313 Agency · Authorised by Nirvana Memorial Garden</div>
+          <button class="btn b-w" style="background:#25D366;color:#fff;font-weight:700;padding:13px;font-size:14px;margin-bottom:8px" onclick="clientWA()">📱 WhatsApp My Consultant</button>
+        </div>
+        <div style="background:var(--W);border-radius:var(--br2);border:1.5px solid var(--a3);padding:18px">
+          <div style="font-family:var(--fh);font-size:14px;font-weight:700;margin-bottom:12px">Send with a message</div>
+          <div class="fg"><label class="lbl">I want to ask about</label><select class="sel" id="c-reason"><option value="niche">Columbarium niche options</option><option value="funeral">Funeral service packages</option><option value="festival">Festival packages</option><option value="cpf">CPF nomination</option><option value="lpa">Lasting Power of Attorney</option><option value="will">Will and estate planning</option><option value="everything">Full review — everything</option></select></div>
+          <div class="fg"><label class="lbl">Message (optional)</label><textarea class="inp" id="c-msg" style="min-height:80px;resize:vertical" placeholder="Anything you'd like your consultant to know..."></textarea></div>
+          <button class="btn b-w" style="background:#25D366;color:#fff;font-weight:700;padding:13px;font-size:14px" onclick="clientWA()">📱 Send via WhatsApp</button>
+        </div>
       </div>
     </div>
-
-    <!-- CONTACT -->
-    <div class="cscreen" id="cscreen-contact">
-      <div style="padding:20px 16px 8px"><div class="section-title">Talk to Your Consultant</div><div class="section-sub">Lee sent you this assessment and can help you close every gap — at your own pace, no pressure.</div></div>
-      <div style="padding:0 16px 24px">
-        <div class="agent-hero-card">
-          <div class="ah-tag">Your Assigned Consultant</div>
-          <div class="ah-av">LH</div>
-          <div class="ah-name">Lee Hwee Teng</div>
-          <div class="ah-role">Afterlife Pre-planning Consultant · 8 years experience<br>Awesome 313 Agency · Authorised by Nirvana Memorial Garden</div>
-          <button class="btn btn-wa btn-w" style="padding:13px;font-size:14px;margin-bottom:8px" onclick="sendWA()">📱 WhatsApp Lee Now</button>
-          <button class="btn btn-ghost btn-w" style="color:rgba(255,255,255,0.6);border-color:rgba(255,255,255,0.15);padding:11px">📞 Call +65 9XXX XXXX</button>
-        </div>
-        <div class="form-card">
-          <div class="form-card-t">Or send a message first</div>
-          <label class="form-lbl">Your name</label>
-          <input class="form-inp" placeholder="e.g. Tan Kok Ming" id="cName"/>
-          <label class="form-lbl">I want to ask about</label>
-          <select class="form-sel" id="cReason">
-            <option value="niche">Columbarium niche options at Nirvana</option>
-            <option value="funeral">Funeral service packages</option>
-            <option value="festival">Qingming / festival packages</option>
-            <option value="cpf">CPF nomination help</option>
-            <option value="lpa">Lasting Power of Attorney (LPA)</option>
-            <option value="will">Will and estate planning</option>
-            <option value="everything">Everything — I want a full review</option>
-          </select>
-          <label class="form-lbl">Additional message (optional)</label>
-          <textarea class="form-ta" rows="3" placeholder="e.g. I have 2 kids and an HDB flat. Not sure where to start..." id="cMsg"></textarea>
-          <button class="btn btn-wa btn-w" style="padding:13px;font-size:14px" onclick="sendWA()">📱 Send via WhatsApp</button>
-        </div>
-        <div class="privacy-note">Your readiness score and gap summary will be shared with Lee so he can prepare. Your personal information is never sold or shared with third parties.</div>
-      </div>
-    </div>
-
-  </div><!-- /client-body -->
-</div><!-- /view-client -->
-
-<!-- QR MODAL -->
-<div class="mo" id="mo-moQR">
-  <div class="modal">
-    <div class="modal-t">Your QR Code</div>
-    <div class="modal-d">Print or display this at events, talks, or your office. It links to your personalised assessment.</div>
-    <div style="text-align:center;padding:20px 0">
-      <div style="width:140px;height:140px;background:var(--ink2);border-radius:var(--r);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(255,255,255,0.45);border:3px solid var(--gold)">QR Code<br>A313-088</div>
-      <div style="font-size:12px;color:var(--ink3);opacity:0.5;margin-top:10px">peaceout.sg/assess?agent=A313-088</div>
-    </div>
-    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeMo('moQR')">Close</button><button class="btn btn-gold" onclick="closeMo('moQR')">↓ Download PNG</button></div>
   </div>
 </div>
 
 <script>
-/* ============================================================
-   APP ROUTING
-   ============================================================ */
-function showView(id){
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('view-'+id).classList.add('active');
-}
+/* ════════════════════════════════════════
+   SUPABASE CONFIGURATION
+   Replace these two values with yours from:
+   supabase.com → your project → Settings → API
+════════════════════════════════════════ */
+const SUPABASE_URL = 'https://uhkawihyusbklxcezjhe.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVoa2F3aWh5dXNia2x4Y2V6amhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzU0NzgsImV4cCI6MjA4OTExMTQ3OH0.7_3oEhiZK_4Cd_ch-Y-Hoac9LACBbDhRXFSELRTgHMM';
+// Invitation code that agents must enter to create an account
+const AGENT_INVITE_CODE = 'AWESOME313';
 
-/* ---- Login ---- */
-function switchTab(t){
-  ['agent','client'].forEach(x=>{
-    document.getElementById('tab-'+x).classList.toggle('active',x===t);
-    document.getElementById(x===t?x+'-form':(x==='agent'?'client-form':'agent-form')).style.display=x===t?'block':'none';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* ════════════════════════════════════════
+   STATE
+════════════════════════════════════════ */
+let currentUser = null;
+let currentAgent = null;
+let currentClientData = null;
+let syncTimer = null;
+let wishSyncTimer = null;
+let prevScore = 0;
+
+/* ════════════════════════════════════════
+   INIT
+════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', async () => {
+  // Check URL params for agent ref (client coming from agent link)
+  const params = new URLSearchParams(window.location.search);
+  const agentRef = params.get('agent') || params.get('ref');
+  if (agentRef) localStorage.setItem('po_agent_ref', agentRef);
+
+  // Check existing session
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    await routeUser();
+  }
+
+  // Listen for auth changes
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      currentUser = session.user;
+      await routeUser();
+    } else if (event === 'SIGNED_OUT') {
+      currentUser = null;
+      showView('auth');
+    }
   });
-  document.getElementById('agent-form').style.display=t==='agent'?'block':'none';
-  document.getElementById('client-form').style.display=t==='client'?'block':'none';
-}
 
-function agentLogin(){
-  const code=document.getElementById('agentCode').value;
-  const pw=document.getElementById('agentPw').value;
-  if(code&&pw){showView('agent');ashow('dashboard')}
-}
+  renderClientChecklist();
+  renderClientGaps();
+});
 
-function clientDemo(){showView('client');cshow('score')}
-function logout(){showView('login')}
-
-/* ---- Agent screens ---- */
-function ashow(id){
-  document.querySelectorAll('.ascreen').forEach(s=>s.classList.remove('on'));
-  document.querySelectorAll('.ani').forEach(n=>n.classList.remove('on'));
-  const s=document.getElementById('ascreen-'+id);
-  if(s)s.classList.add('on');
-  document.querySelectorAll('.ani').forEach(n=>{
-    if((n.getAttribute('onclick')||'').includes("'"+id+"'"))n.classList.add('on');
-  });
-  const m=document.querySelector('.agent-main');
-  if(m)m.scrollTop=0;
-}
-
-/* ---- Client screens ---- */
-function cshow(id){
-  document.querySelectorAll('.cscreen').forEach(s=>s.classList.remove('on'));
-  document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('on'));
-  const s=document.getElementById('cscreen-'+id);
-  if(s)s.classList.add('on');
-  document.querySelectorAll('.ctab').forEach(t=>{
-    if((t.getAttribute('onclick')||'').includes("'"+id+"'"))t.classList.add('on');
-  });
-  const b=document.querySelector('.client-body');
-  if(b)b.scrollTop=0;
-}
-
-/* ---- Interactions ---- */
-function toggleG(el){el.classList.toggle('open')}
-function toggleE(el){el.classList.toggle('open')}
-
-function ctick(el){
-  const box=el.querySelector('.cl-box');
-  const lbl=el.querySelector('.cl-lbl');
-  const tag=el.querySelector('.cl-tag');
-  if(box.classList.contains('chk')){
-    box.classList.remove('chk');box.innerHTML='';
-    lbl.classList.remove('done');
-    if(tag&&tag.classList.contains('gn')){tag.className='cl-tag r';tag.textContent='Priority'}
-  }else{
-    box.classList.add('chk');
-    box.innerHTML='<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,8 8,2" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>';
-    lbl.classList.add('done');
-    if(tag){tag.className='cl-tag gn';tag.textContent='Done'}
+async function routeUser() {
+  // Check if user is an agent
+  const { data: agent } = await sb.from('agents').select('*').eq('id', currentUser.id).single();
+  if (agent) {
+    currentAgent = agent;
+    showView('agent');
+    loadAgentData();
+  } else {
+    // It's a client
+    showView('client');
+    loadClientData();
   }
 }
 
-function goContact(e,topic){
-  e.stopPropagation();
-  const m={niche:'Columbarium niche options at Nirvana',funeral:'Funeral service packages',festival:'Qingming / festival packages',cpf:'CPF nomination help',lpa:'Lasting Power of Attorney (LPA)',hdb:'Will and estate planning',digital:'Will and estate planning'};
-  const sel=document.getElementById('cReason');
-  if(sel){for(let i=0;i<sel.options.length;i++){if(sel.options[i].value===topic){sel.selectedIndex=i;break}}}
-  cshow('contact');
+/* ════════════════════════════════════════
+   AUTH — ROLE SWITCHING
+════════════════════════════════════════ */
+function switchRole(role) {
+  ['client','agent'].forEach(r => {
+    document.getElementById('role-tab-'+r).classList.toggle('on', r===role);
+    document.getElementById('auth-'+r).style.display = r===role ? 'block' : 'none';
+  });
 }
 
-function copyLink(){
-  const url='peaceout.sg/assess?agent=A313-088&ref=LeeHweeTeng';
-  if(navigator.clipboard){navigator.clipboard.writeText('https://'+url)}
-  alert('Link copied!\n\nhttps://'+url);
+function clientMode(mode) {
+  ['signin','signup','otp'].forEach(m => {
+    document.getElementById('client-'+m).style.display = m===mode ? 'block' : 'none';
+    const tab = document.getElementById('ctab-'+m);
+    if(tab) tab.classList.toggle('on', m===mode);
+  });
 }
 
-function sendWA(){
-  const name=document.getElementById('cName')?.value||'';
-  const sel=document.getElementById('cReason');
-  const reason=sel?sel.options[sel.selectedIndex].text:'afterlife planning';
-  const msg=document.getElementById('cMsg')?.value||'';
-  const text=encodeURIComponent('Hi Lee! I completed the PeaceOut.sg readiness assessment — my score is 28%. I\'d like to know more about '+reason+'.'+(msg?' '+msg:'')+ '\n\n[Assessment summary: 5 gaps found — niche, funeral pkg, CPF, LPA, HDB]');
-  window.open('https://wa.me/6591234567?text='+text,'_blank');
+function agentMode(mode) {
+  ['signin','signup'].forEach(m => {
+    document.getElementById('agent-'+m).style.display = m===mode ? 'block' : 'none';
+    document.getElementById('atab-'+m).classList.toggle('on', m===mode);
+  });
 }
 
-/* ---- Modals ---- */
-function openMo(id){document.getElementById('mo-'+id).classList.add('open')}
-function closeMo(id){document.getElementById('mo-'+id).classList.remove('open')}
-document.querySelectorAll('.mo').forEach(o=>o.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')}));
+/* ════════════════════════════════════════
+   CLIENT AUTH
+════════════════════════════════════════ */
+async function clientSignIn() {
+  const mobile = document.getElementById('c-signin-mobile').value.trim();
+  const pw = document.getElementById('c-signin-pw').value;
+  if (!mobile || !pw) return toast2('Please enter your mobile number and password');
 
-/* ---- Quiz ---- */
-const Qs=[
-  {q:"Do you have a pre-arranged columbarium niche?",hint:"Where your ashes will be kept after cremation.",opts:[{t:"Yes — at Nirvana Memorial Garden",i:"⛩️",p:20},{t:"Yes — at another place",i:"🏛️",p:15},{t:"No, not yet",i:"❌",p:0},{t:"Haven't thought about it",i:"🤔",p:0}]},
-  {q:"Do you have a pre-planned funeral service package?",hint:"Pre-arranged packages remove 30+ decisions from your family in 48 hours.",opts:[{t:"Yes — fully arranged",i:"✓",p:20},{t:"Partially arranged",i:"〜",p:8},{t:"No",i:"❌",p:0},{t:"I don't know what that is",i:"❓",p:0}]},
-  {q:"Have you updated your CPF nomination?",hint:"CPF funds cannot go through your will — a nomination is required.",opts:[{t:"Yes — updated within 2 years",i:"✓",p:15},{t:"Yes — but a long time ago",i:"⚠️",p:5},{t:"No",i:"❌",p:0},{t:"Not sure",i:"❓",p:0}]},
-  {q:"Do you have a Lasting Power of Attorney (LPA)?",hint:"Allows a trusted person to manage your affairs if you lose mental capacity.",opts:[{t:"Yes — registered with OPG",i:"✓",p:15},{t:"In progress",i:"〜",p:5},{t:"No",i:"❌",p:0},{t:"What is an LPA?",i:"❓",p:0}]},
-  {q:"Do you have a valid will?",hint:"A will must be signed in front of 2 witnesses who are not beneficiaries.",opts:[{t:"Yes — updated within 3 years",i:"✓",p:10},{t:"Yes — but it's old",i:"⚠️",p:5},{t:"No will",i:"❌",p:0},{t:"Being drafted",i:"〜",p:3}]},
-  {q:"Do you own a property (HDB or private)?",hint:"Property ownership type affects how it's distributed after death.",opts:[{t:"Yes — addressed in my will",i:"🏠",p:10},{t:"Yes — but not in my will",i:"⚠️",p:2},{t:"No property owned",i:"—",p:10},{t:"I rent",i:"🔑",p:10}]},
-  {q:"Have you arranged any festival packages?",hint:"Annual rites like Qingming for Chinese-Buddhist families.",opts:[{t:"Yes — at Nirvana",i:"✓",p:5},{t:"Yes — elsewhere",i:"🏛️",p:3},{t:"Not relevant to my religion",i:"—",p:5},{t:"Not yet",i:"❌",p:0}]},
-  {q:"Have you documented your digital accounts?",hint:"Banking apps, social media, email, crypto — your family may need access.",opts:[{t:"Yes — full list with instructions",i:"✓",p:5},{t:"Partially done",i:"〜",p:2},{t:"No",i:"❌",p:0},{t:"Haven't thought about it",i:"🤔",p:0}]}
+  setLoading('c-signin-btn', true);
+  // Use mobile as email (format: +6591234567@peaceout.sg)
+  const email = mobileToEmail(mobile);
+  const { error } = await sb.auth.signInWithPassword({ email, password: pw });
+  setLoading('c-signin-btn', false);
+  if (error) return toast2('Sign in failed: ' + error.message);
+}
+
+async function clientSignUp() {
+  const name = document.getElementById('c-name').value.trim();
+  const mobile = document.getElementById('c-mobile').value.trim();
+  const pw = document.getElementById('c-pw').value;
+  const religion = document.getElementById('c-religion').value;
+  const agentCode = document.getElementById('c-agent-code').value.trim();
+
+  if (!name) return toast2('Please enter your name');
+  if (!mobile) return toast2('Please enter your mobile number');
+  if (pw.length < 8) return toast2('Password must be at least 8 characters');
+
+  setLoading('c-signup-btn', true);
+  const email = mobileToEmail(mobile);
+
+  const { data, error } = await sb.auth.signUp({
+    email,
+    password: pw,
+    options: { data: { full_name: name, mobile, role: 'client' } }
+  });
+
+  if (error) { setLoading('c-signup-btn', false); return toast2('Sign up failed: ' + error.message); }
+
+  // Find agent by code if provided
+  let agentId = null;
+  if (agentCode) {
+    const { data: agent } = await sb.from('agents').select('id').eq('agent_code', agentCode.toUpperCase()).single();
+    if (agent) agentId = agent.id;
+  }
+  // Also check URL ref
+  const urlRef = localStorage.getItem('po_agent_ref');
+  if (!agentId && urlRef) {
+    const { data: agent } = await sb.from('agents').select('id').eq('agent_code', urlRef.toUpperCase()).single();
+    if (agent) agentId = agent.id;
+  }
+
+  // Create client record
+  if (data.user) {
+    await sb.from('clients').insert({
+      id: data.user.id, // use auth user id as client id (one-to-one)
+      agent_id: agentId,
+      full_name: name,
+      mobile,
+      religion,
+      source: urlRef ? 'link' : 'direct',
+      share_link_ref: urlRef
+    });
+    if (agentId && urlRef) {
+      await sb.from('agent_links').update({ clicks: sb.rpc('increment') }).eq('link_code', urlRef);
+    }
+  }
+
+  setLoading('c-signup-btn', false);
+  toast2('✓ Account created! Check your mobile for verification.');
+}
+
+async function sendClientOTP() {
+  const mobile = document.getElementById('c-signin-mobile').value.trim();
+  if (!mobile) return toast2('Enter your mobile number first');
+  clientMode('otp');
+  const { error } = await sb.auth.signInWithOtp({ phone: mobile });
+  if (error) { clientMode('signin'); return toast2('OTP error: ' + error.message); }
+  toast2('OTP sent to ' + mobile);
+}
+
+async function verifyClientOTP() {
+  const mobile = document.getElementById('c-signin-mobile').value.trim();
+  const token = document.getElementById('c-otp').value.trim();
+  if (!token) return toast2('Enter the OTP code');
+  setLoading('c-otp-btn', true);
+  const { error } = await sb.auth.verifyOtp({ phone: mobile, token, type: 'sms' });
+  setLoading('c-otp-btn', false);
+  if (error) return toast2('Invalid OTP: ' + error.message);
+}
+
+/* ════════════════════════════════════════
+   AGENT AUTH
+════════════════════════════════════════ */
+async function agentSignIn() {
+  const email = document.getElementById('a-signin-email').value.trim();
+  const pw = document.getElementById('a-signin-pw').value;
+  if (!email || !pw) return toast2('Please enter email and password');
+  setLoading('a-signin-btn', true);
+  const { error } = await sb.auth.signInWithPassword({ email, password: pw });
+  setLoading('a-signin-btn', false);
+  if (error) return toast2('Sign in failed: ' + error.message);
+}
+
+async function agentSignUp() {
+  const invite = document.getElementById('a-invite').value.trim();
+  if (invite.toUpperCase() !== AGENT_INVITE_CODE) return toast2('Invalid invitation code. Contact your agency admin.');
+
+  const name = document.getElementById('a-name').value.trim();
+  const code = document.getElementById('a-code').value.trim().toUpperCase();
+  const email = document.getElementById('a-email').value.trim();
+  const mobile = document.getElementById('a-mobile').value.trim();
+  const pw = document.getElementById('a-pw').value;
+
+  if (!name || !code || !email) return toast2('Please fill in all required fields');
+  if (pw.length < 8) return toast2('Password must be at least 8 characters');
+
+  setLoading('a-signup-btn', true);
+  const { data, error } = await sb.auth.signUp({
+    email,
+    password: pw,
+    options: { data: { full_name: name, agent_code: code, role: 'agent' } }
+  });
+
+  if (error) { setLoading('a-signup-btn', false); return toast2('Sign up failed: ' + error.message); }
+
+  if (data.user) {
+    const { error: insErr } = await sb.from('agents').insert({
+      id: data.user.id,
+      agent_code: code,
+      full_name: name,
+      mobile,
+      role: 'consultant',
+      is_active: true
+    });
+    if (insErr) { setLoading('a-signup-btn', false); return toast2('Account setup error: ' + insErr.message); }
+
+    // Create default share link
+    await sb.from('agent_links').insert({ agent_id: data.user.id, link_code: code });
+  }
+
+  setLoading('a-signup-btn', false);
+  toast2('✓ Account created! Check your email to verify.');
+}
+
+async function forgotPassword() {
+  const email = document.getElementById('a-signin-email').value.trim();
+  if (!email) return toast2('Enter your email address first');
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/?reset=true'
+  });
+  if (error) return toast2('Error: ' + error.message);
+  toast2('✓ Password reset email sent to ' + email);
+}
+
+/* ════════════════════════════════════════
+   AGENT DATA LOADING
+════════════════════════════════════════ */
+async function loadAgentData() {
+  if (!currentAgent) return;
+
+  // Update sidebar
+  const initials = currentAgent.full_name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('agentAvatar').textContent = initials;
+  document.getElementById('agentName').textContent = currentAgent.full_name;
+  document.getElementById('agentCodeDisplay').textContent = currentAgent.agent_code + ' · ' + currentAgent.role;
+
+  // Show admin nav if admin
+  if (currentAgent.role === 'admin') {
+    document.getElementById('admin-nav-item').style.display = 'flex';
+  }
+
+  // Set share link
+  const shareLink = `peaceout.sg/assess?agent=${currentAgent.agent_code}`;
+  document.getElementById('myShareLink').textContent = shareLink;
+  document.getElementById('myShareLink2').textContent = shareLink;
+
+  // WhatsApp template
+  const waT = `Hi [Name]! I'm ${currentAgent.full_name.split(' ')[0]} from Awesome 313 Agency. 👋\n\nHave you thought about what happens to your family when you're gone? Most of us haven't planned for it.\n\nFree 5-min readiness check — see exactly what gaps your family might face:\npeaceout.sg/assess?agent=${currentAgent.agent_code}\n\nHappy to walk through the results! 😊`;
+  document.getElementById('waTemplate').textContent = waT;
+
+  // Load clients
+  await loadAgentClients();
+  await loadAgentLeads();
+
+  if (currentAgent.role === 'admin') {
+    await loadAdminData();
+  }
+}
+
+async function loadAgentClients() {
+  const { data: clients, error } = await sb
+    .from('clients')
+    .select('*')
+    .eq('agent_id', currentAgent.id)
+    .order('created_at', { ascending: false });
+
+  if (error) return console.error(error);
+
+  const total = clients?.length || 0;
+  const niches = clients?.filter(c => c.has_niche).length || 0;
+  const avgScore = total > 0 ? Math.round(clients.reduce((a,c) => a + (c.readiness_score||0), 0) / total) : 0;
+
+  document.getElementById('st-clients').textContent = total;
+  document.getElementById('st-niches').textContent = niches;
+  document.getElementById('st-score').textContent = avgScore + '%';
+  document.getElementById('dash-sub').textContent = total + ' clients under management';
+
+  // Render clients table
+  const tbody = document.getElementById('clientsTableBody');
+  if (!clients?.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;opacity:.5">No clients yet — share your link to get started</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = clients.map(c => {
+    const score = c.readiness_score || 0;
+    const scoreColor = score < 40 ? 'var(--r)' : score < 70 ? 'var(--gd)' : 'var(--j)';
+    const priority = score < 40 ? '<span class="pill p-red">Critical</span>' : score < 70 ? '<span class="pill p-gold">Follow Up</span>' : '<span class="pill p-green">On Track</span>';
+    const lastActive = c.last_active ? new Date(c.last_active).toLocaleDateString('en-SG') : '—';
+    return `<tr>
+      <td><strong>${c.full_name}</strong><br><span style="font-size:11px;opacity:.4">${c.mobile||c.email||'—'}</span></td>
+      <td><span style="font-weight:700;color:${scoreColor}">${score}%</span></td>
+      <td>${c.has_niche ? '<span class="pill p-green">✓</span>' : '<span class="pill p-red">Missing</span>'}</td>
+      <td>${c.has_funeral ? '<span class="pill p-green">✓</span>' : '<span class="pill p-red">Missing</span>'}</td>
+      <td>${priority}</td>
+      <td><span class="pill p-gray">${c.source||'direct'}</span></td>
+      <td style="font-size:12px;opacity:.55">${lastActive}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function loadAgentLeads() {
+  const { data: leads } = await sb
+    .from('lead_notifications')
+    .select('*')
+    .eq('agent_id', currentAgent.id)
+    .eq('status', 'new')
+    .order('created_at', { ascending: false });
+
+  const count = leads?.length || 0;
+  document.getElementById('lead-count').textContent = count;
+  document.getElementById('st-leads').textContent = count;
+  document.getElementById('new-lead-count').textContent = count;
+
+  // Recent leads on dashboard
+  const container = document.getElementById('recent-leads-container');
+  if (!leads?.length) {
+    container.innerHTML = '<div style="background:var(--W);border-radius:var(--br2);border:1.5px solid var(--a3);padding:24px;text-align:center;color:var(--k3);opacity:.5;font-size:13px">No new leads yet — share your assessment link to generate leads</div>';
+    return;
+  }
+
+  container.innerHTML = `<div style="font-family:var(--fh);font-size:14px;font-weight:700;margin-bottom:12px">Hot Leads</div>` +
+    leads.slice(0,3).map(l => `
+      <div style="background:var(--W);border-radius:var(--br2);border:2px solid var(--r);padding:16px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div><div style="font-family:var(--fh);font-size:14px;font-weight:700">${l.client_name}</div><div style="font-size:12px;color:var(--k3);opacity:.55;margin-top:2px">Score: ${l.client_score||0}% · ${new Date(l.created_at).toLocaleDateString('en-SG')}</div></div>
+          <span class="pill p-red">Hot Lead</span>
+        </div>
+        ${l.client_message ? `<div style="background:var(--a);border-radius:var(--br);padding:10px;font-size:13px;color:var(--k3);margin-bottom:10px">"${l.client_message}"</div>` : ''}
+        <button class="btn b-sm" style="background:#25D366;color:#fff;font-weight:700;padding:9px 14px" onclick="waLead('${l.client_name}','${l.client_score||0}','${l.client_message||''}')">📱 WhatsApp Now</button>
+      </div>`).join('');
+
+  // Full leads screen
+  const leadsContainer = document.getElementById('leads-container');
+  leadsContainer.innerHTML = leads.map(l => `
+    <div style="background:var(--W);border-radius:var(--br2);border:2px solid var(--r);padding:16px;margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px"><div><div style="font-family:var(--fh);font-size:15px;font-weight:700">${l.client_name}</div><div style="font-size:12px;opacity:.55;margin-top:2px">Score: ${l.client_score||0}% · ${l.reason||'General enquiry'}</div></div><span class="pill p-red">New</span></div>
+      ${l.client_message?`<div style="background:var(--a);border-radius:var(--br);padding:10px;font-size:13px;color:var(--k3);margin-bottom:10px">"${l.client_message}"</div>`:''}
+      <div style="display:flex;gap:8px"><button class="btn b-sm" style="background:#25D366;color:#fff;font-weight:700" onclick="waLead('${l.client_name}','${l.client_score||0}','${l.client_message||''}')">📱 WhatsApp</button><button class="btn b-ghost b-sm" onclick="markLeadContacted('${l.id}')">Mark Contacted</button></div>
+    </div>`).join('') || '<div style="text-align:center;padding:32px;opacity:.5">No new leads</div>';
+}
+
+async function markLeadContacted(leadId) {
+  await sb.from('lead_notifications').update({ status: 'contacted' }).eq('id', leadId);
+  toast2('✓ Marked as contacted');
+  await loadAgentLeads();
+}
+
+async function loadAdminData() {
+  const [agentsRes, clientsRes] = await Promise.all([
+    sb.from('agents').select('*').order('created_at'),
+    sb.from('clients').select('*, agents(full_name, agent_code)').order('created_at', { ascending: false })
+  ]);
+
+  const agents = agentsRes.data || [];
+  const clients = clientsRes.data || [];
+  const niches = clients.filter(c => c.has_niche).length;
+  const avgScore = clients.length ? Math.round(clients.reduce((a,c) => a+(c.readiness_score||0),0)/clients.length) : 0;
+
+  document.getElementById('adm-agents').textContent = agents.filter(a=>a.is_active).length;
+  document.getElementById('adm-clients').textContent = clients.length;
+  document.getElementById('adm-niches').textContent = niches;
+  document.getElementById('adm-score').textContent = avgScore + '%';
+
+  // Agents table
+  document.getElementById('agentsTableBody').innerHTML = agents.map(a => `
+    <tr>
+      <td><strong>${a.full_name}</strong></td>
+      <td><code style="font-size:12px;background:var(--a);padding:2px 6px;border-radius:4px">${a.agent_code}</code></td>
+      <td><span class="pill ${a.role==='admin'?'p-plum':'p-gray'}">${a.role}</span></td>
+      <td>${clients.filter(c=>c.agent_id===a.id).length}</td>
+      <td><span class="pill ${a.is_active?'p-green':'p-red'}">${a.is_active?'Active':'Inactive'}</span></td>
+      <td><button class="btn b-ghost b-sm" onclick="toggleAgent('${a.id}',${a.is_active})">${a.is_active?'Deactivate':'Activate'}</button></td>
+    </tr>`).join('');
+
+  // All clients table
+  document.getElementById('allClientsBody').innerHTML = clients.slice(0,20).map(c => {
+    const score = c.readiness_score || 0;
+    const scoreColor = score < 40 ? 'var(--r)' : score < 70 ? 'var(--gd)' : 'var(--j)';
+    return `<tr>
+      <td><strong>${c.full_name}</strong></td>
+      <td>${c.agents?.full_name||'—'} <span style="font-size:11px;opacity:.5">(${c.agents?.agent_code||'?'})</span></td>
+      <td><span style="font-weight:700;color:${scoreColor}">${score}%</span></td>
+      <td>${c.has_niche?'<span class="pill p-green">✓</span>':'<span class="pill p-red">✗</span>'}</td>
+      <td>${c.has_funeral?'<span class="pill p-green">✓</span>':'<span class="pill p-red">✗</span>'}</td>
+      <td>${score<40?'<span class="pill p-red">Critical</span>':score<70?'<span class="pill p-gold">Follow Up</span>':'<span class="pill p-green">On Track</span>'}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function toggleAgent(agentId, isActive) {
+  await sb.from('agents').update({ is_active: !isActive }).eq('id', agentId);
+  toast2(isActive ? 'Agent deactivated' : 'Agent activated');
+  await loadAdminData();
+}
+
+function openCreateAgent() {
+  const f = document.getElementById('createAgentForm');
+  f.style.display = f.style.display==='none' ? 'block' : 'none';
+}
+
+async function createAgent() {
+  const name = document.getElementById('new-agent-name').value.trim();
+  const code = document.getElementById('new-agent-code').value.trim().toUpperCase();
+  const email = document.getElementById('new-agent-email').value.trim();
+  const mobile = document.getElementById('new-agent-mobile').value.trim();
+  const role = document.getElementById('new-agent-role').value;
+
+  if (!name || !code || !email) return toast2('Please fill in all required fields');
+
+  setLoading('create-agent-btn', true);
+
+  // Use Supabase admin to invite user (sends email)
+  const { data, error } = await sb.auth.admin.inviteUserByEmail(email, {
+    data: { full_name: name, agent_code: code, role: 'agent' }
+  });
+
+  if (error) {
+    // Fallback: create the agent record without auth (admin will set password)
+    toast2('Note: Supabase Admin API needs service key. Create user in Supabase dashboard, then run:\nINSERT INTO agents VALUES (\'UUID\',\''+code+'\',\''+name+'\',\''+mobile+'\',\'Awesome 313 Agency\',\''+role+'\',true)');
+    setLoading('create-agent-btn', false);
+    return;
+  }
+
+  if (data.user) {
+    await sb.from('agents').insert({
+      id: data.user.id, agent_code: code, full_name: name,
+      mobile, role, is_active: true
+    });
+    await sb.from('agent_links').insert({ agent_id: data.user.id, link_code: code });
+  }
+
+  setLoading('create-agent-btn', false);
+  toast2('✓ Invitation sent to ' + email);
+  document.getElementById('createAgentForm').style.display = 'none';
+  await loadAdminData();
+}
+
+/* ════════════════════════════════════════
+   CLIENT DATA LOADING
+════════════════════════════════════════ */
+async function loadClientData() {
+  if (!currentUser) return;
+
+  // Load client record
+  const { data: client } = await sb.from('clients')
+    .select('*, agents(full_name, agent_code, mobile)')
+    .eq('id', currentUser.id)
+    .single();
+
+  if (!client) {
+    // Client record might not exist yet (just signed up)
+    const meta = currentUser.user_metadata || {};
+    document.getElementById('c-sname').textContent = 'Hi, ' + (meta.full_name||'').split(' ')[0] + ' 👋';
+    document.getElementById('c-ssub').textContent = 'Your readiness score';
+    setSyncBadge('ok', 'Synced ✓');
+    return;
+  }
+
+  currentClientData = client;
+
+  // Set agent info
+  if (client.agents) {
+    const initials = client.agents.full_name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('c-agent-av').textContent = initials;
+    document.getElementById('ap-av').textContent = initials;
+    document.getElementById('c-agent-name').textContent = client.agents.full_name;
+    document.getElementById('ap-name').textContent = client.agents.full_name;
+    document.getElementById('c-contact-av').textContent = initials;
+    document.getElementById('c-contact-name').textContent = client.agents.full_name;
+  }
+
+  // Set score name
+  const firstName = client.full_name?.split(' ')[0] || currentUser.user_metadata?.full_name?.split(' ')[0] || 'there';
+  document.getElementById('c-sname').textContent = 'Hi, ' + firstName + ' 👋';
+  document.getElementById('c-ssub').textContent = 'Your readiness score';
+
+  // Populate profile fields
+  const fieldMap = {
+    'cp-name': client.full_name, 'cp-dob': client.date_of_birth,
+    'cp-gender': client.gender, 'cp-religion': client.religion,
+    'cp-marital': client.marital_status, 'cp-address': client.address,
+  };
+  Object.entries(fieldMap).forEach(([id,val]) => { const el=document.getElementById(id); if(el&&val)el.value=val; });
+
+  const boolMap = {
+    'cp-niche': client.has_niche, 'cp-funeral': client.has_funeral,
+    'cp-qingming': client.has_qingming, 'cp-will': client.has_will,
+    'cp-lpa': client.has_lpa, 'cp-cpf': client.has_cpf,
+    'cp-insurance': client.has_insurance, 'cp-digital': client.has_digital,
+    'cp-amd': client.has_amd || client.has_organ,
+  };
+  Object.entries(boolMap).forEach(([id,val]) => { const el=document.getElementById(id); if(el)el.checked=!!val; });
+
+  // Load wishes (private — uses service role in production)
+  const { data: wishes } = await sb.from('client_wishes').select('*').eq('client_id', client.id).single();
+  if (wishes) {
+    const wMap = {
+      'cw-funeral': wishes.wake_prefs, 'cw-spouse': '', 'cw-family': '',
+      'cw-medical': wishes.medical_wishes, 'cw-items': wishes.item_distribution,
+    };
+    if (wishes.personal_messages?.length) {
+      const spouse = wishes.personal_messages.find(m => ['spouse','wife','husband','partner'].some(r => m.relationship?.toLowerCase().includes(r)));
+      if (spouse) document.getElementById('cw-spouse').value = spouse.message || '';
+      const family = wishes.personal_messages.filter(m => m !== spouse);
+      if (family.length) document.getElementById('cw-family').value = family.map(m=>`To ${m.to}:\n${m.message}`).join('\n\n');
+    }
+    Object.entries(wMap).forEach(([id,val]) => { const el=document.getElementById(id); if(el&&val)el.value=val; });
+  }
+
+  // Update last active
+  await sb.from('clients').update({ last_active: new Date().toISOString() }).eq('id', client.id);
+
+  setSyncBadge('ok', 'Synced ✓');
+  recalcClient();
+}
+
+/* ════════════════════════════════════════
+   CLIENT SCORE ENGINE
+════════════════════════════════════════ */
+function recalcClient() {
+  const g = (id) => { const el=document.getElementById(id); return el ? (el.type==='checkbox' ? el.checked : el.value) : false; };
+  let earned = 0;
+  // Nirvana (30)
+  if(g('cp-niche'))earned+=15; if(g('cp-funeral'))earned+=12; if(g('cp-qingming'))earned+=3;
+  // Legal (22)
+  if(g('cp-will'))earned+=8; if(g('cp-lpa'))earned+=8; if(g('cp-amd'))earned+=3; if(g('cp-name'))earned+=1; if(g('cp-religion'))earned+=1; if(g('cp-marital'))earned+=1;
+  // Finance (20)
+  if(g('cp-cpf'))earned+=10; if(g('cp-insurance'))earned+=6; if(g('cp-dob'))earned+=2; if(g('cp-address'))earned+=2;
+  // Digital (10)
+  if(g('cp-digital'))earned+=8; if(g('cp-gender'))earned+=1; if(g('cp-dob'))earned+=1;
+
+  const sc = Math.min(100, Math.round((earned / 100) * 100));
+  animClientScore(sc);
+  updateClientPriority(g);
+  prevScore = sc;
+}
+
+let scTimer;
+function animClientScore(target) {
+  const arcEl = document.getElementById('c-sarc');
+  const snEl = document.getElementById('c-sn');
+  const start = prevScore, diff = target - start, dur = 600, t0 = Date.now();
+  const improved = diff > 0;
+  clearInterval(scTimer);
+  scTimer = setInterval(() => {
+    const t = Math.min(1,(Date.now()-t0)/dur), ease = 1-Math.pow(1-t,3), cur = Math.round(start+diff*ease);
+    if(snEl){snEl.textContent=cur+'%';if(improved)snEl.classList.add('anim');}
+    if(arcEl)arcEl.style.strokeDashoffset=Math.round(239*(1-cur/100));
+    ['c-cl-score','c-gap-score'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=cur+'%';});
+    ['c-cl-bar','c-gap-bar'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.width=cur+'%';});
+    if(t>=1){
+      clearInterval(scTimer);
+      if(snEl)snEl.classList.remove('anim');
+      if(improved&&diff>=5){const rw=document.getElementById('c-srw');if(rw){rw.classList.add('cel');setTimeout(()=>rw.classList.remove('cel'),800);}}
+      if(improved&&diff>=10)doConfetti();
+      if(improved&&diff>0)toast2('Score: '+target+'%'+(diff>0?' (+'+diff+')':''));
+    }
+  }, 16);
+
+  // Update category bars (simplified)
+  const cats = {
+    nirv:{id1:'c-cf1',id2:'c-cp1',val: Math.round(((document.getElementById('cp-niche')?.checked?15:0)+(document.getElementById('cp-funeral')?.checked?12:0)+(document.getElementById('cp-qingming')?.checked?3:0))/30*100)},
+    legal:{id1:'c-cf2',id2:'c-cp2',val: Math.round(((document.getElementById('cp-will')?.checked?8:0)+(document.getElementById('cp-lpa')?.checked?8:0)+(document.getElementById('cp-amd')?.checked?3:0))/22*100)},
+    fin:{id1:'c-cf3',id2:'c-cp3',val: Math.round(((document.getElementById('cp-cpf')?.checked?10:0)+(document.getElementById('cp-insurance')?.checked?6:0))/20*100)},
+    prop:{id1:'c-cf4',id2:'c-cp4',val:0},
+    dig:{id1:'c-cf5',id2:'c-cp5',val:Math.round((document.getElementById('cp-digital')?.checked?8:0)/10*100)},
+  };
+  Object.values(cats).forEach(c=>{
+    const b=document.getElementById(c.id1);const p=document.getElementById(c.id2);
+    if(b)b.style.width=c.val+'%';if(p)p.textContent=c.val+'%';
+  });
+
+  const vc=document.getElementById('c-vchip');
+  if(vc){
+    if(target<40){vc.className='vchip vr';vc.textContent='⚠ Critical — major gaps';}
+    else if(target<70){vc.className='vchip va';vc.textContent='⚑ Moderate — gaps to close';}
+    else{vc.className='vchip vg';vc.textContent='✓ Looking great';}
+  }
+}
+
+function updateClientPriority(g) {
+  const el = document.getElementById('c-plist'); if(!el) return;
+  const acts = [];
+  if(!g('cp-niche')) acts.push({i:'⛩️',t:'Secure a columbarium niche',w:'Most critical — pre-arranged resting place.',lv:'c'});
+  if(!g('cp-funeral')) acts.push({i:'⚰️',t:'Pre-arrange funeral package',w:'Removes 30+ decisions from grieving family.',lv:'c'});
+  if(!g('cp-cpf')) acts.push({i:'📋',t:'Update CPF nomination',w:'CPF cannot go through your will.',lv:'h'});
+  if(!g('cp-lpa')) acts.push({i:'⚖️',t:'Register LPA',w:'Family needs court order without it.',lv:'h'});
+  if(!g('cp-will')) acts.push({i:'📜',t:'Draft a valid will',w:'State decides your estate without one.',lv:'h'});
+  if(!acts.length){el.innerHTML='<div style="background:var(--jl);border:1.5px solid rgba(29,122,95,.25);border-radius:var(--br2);padding:18px;text-align:center"><div style="font-size:28px;margin-bottom:8px">🎉</div><div style="font-family:var(--fh);font-size:15px;font-weight:700;color:var(--j)">All priority items settled!</div></div>';return;}
+  const bm={c:'var(--rl)',h:'#FFFBF0'},bd={c:'rgba(196,75,58,.25)',h:'#F0DFA0'},lm={c:'🔥 Critical',h:'⚑ High'},clm={c:'var(--r)',h:'#9A7200'};
+  el.innerHTML=acts.slice(0,4).map(a=>`<div style="display:flex;align-items:center;gap:11px;padding:13px 14px;background:${bm[a.lv]};border:1.5px solid ${bd[a.lv]};border-radius:14px;cursor:pointer;margin-bottom:8px" onclick="cGo('contact')"><div style="font-size:22px">${a.i}</div><div style="flex:1"><div style="font-size:10px;font-weight:700;color:${clm[a.lv]};text-transform:uppercase;margin-bottom:2px">${lm[a.lv]}</div><div style="font-size:13px;font-weight:600;color:var(--k)">${a.t}</div><div style="font-size:11px;color:var(--k3);opacity:.65;margin-top:2px">${a.w}</div></div><div style="color:${clm[a.lv]}">›</div></div>`).join('');
+}
+
+/* ════════════════════════════════════════
+   SYNC TO SUPABASE
+════════════════════════════════════════ */
+function scheduleSync() {
+  setSyncBadge('pending', 'Saving...');
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(forceSyncNow, 1500);
+  recalcClient();
+}
+
+async function forceSyncNow() {
+  if (!currentUser) return;
+  setSyncBadge('pending', 'Saving...');
+
+  const g = (id) => { const el=document.getElementById(id); return el ? (el.type==='checkbox' ? el.checked : (el.value||null)) : null; };
+
+  // Calculate score
+  recalcClient();
+  const scoreEl = document.getElementById('c-sn');
+  const score = parseInt(scoreEl?.textContent||'0') || 0;
+
+  const payload = {
+    full_name: g('cp-name'), date_of_birth: g('cp-dob'), gender: g('cp-gender'),
+    religion: g('cp-religion'), marital_status: g('cp-marital'), address: g('cp-address'),
+    has_niche: !!g('cp-niche'), has_funeral: !!g('cp-funeral'), has_qingming: !!g('cp-qingming'),
+    has_will: !!g('cp-will'), has_lpa: !!g('cp-lpa'), has_cpf: !!g('cp-cpf'),
+    has_insurance: !!g('cp-insurance'), has_digital: !!g('cp-digital'), has_amd: !!g('cp-amd'),
+    readiness_score: score,
+    updated_at: new Date().toISOString(),
+  };
+
+  const { error } = await sb.from('clients').update(payload).eq('id', currentUser.id);
+  if (error) { setSyncBadge('err', 'Sync failed — tap to retry'); return; }
+  setSyncBadge('ok', 'Synced ✓');
+  toast2('✓ Saved');
+}
+
+function scheduleWishSync() {
+  setSyncBadge('pending', 'Saving wishes...');
+  clearTimeout(wishSyncTimer);
+  wishSyncTimer = setTimeout(forceWishSyncNow, 2000);
+}
+
+async function forceWishSyncNow() {
+  if (!currentUser || !currentClientData) return;
+  setSyncBadge('pending', 'Saving...');
+
+  const g = (id) => document.getElementById(id)?.value || '';
+  const msgs = [];
+  const spouseMsg = g('cw-spouse');
+  const familyMsg = g('cw-family');
+  if (spouseMsg) msgs.push({ to: 'Spouse', relationship: 'spouse', message: spouseMsg });
+  if (familyMsg) msgs.push({ to: 'Family', relationship: 'family', message: familyMsg });
+
+  const payload = {
+    client_id: currentClientData.id,
+    wake_prefs: g('cw-funeral'),
+    medical_wishes: g('cw-medical'),
+    item_distribution: g('cw-items'),
+    personal_messages: msgs,
+    updated_at: new Date().toISOString(),
+  };
+
+  // Upsert wishes
+  const { error } = await sb.from('client_wishes')
+    .upsert(payload, { onConflict: 'client_id' });
+
+  if (error) { setSyncBadge('err', 'Save failed'); return; }
+  setSyncBadge('ok', '🔒 Wishes saved ✓');
+  toast2('🔒 Final wishes saved privately');
+}
+
+function setSyncBadge(state, text) {
+  const badge = document.getElementById('syncBadge');
+  const dot = document.getElementById('syncDot');
+  const txt = document.getElementById('syncText');
+  if(!badge||!dot||!txt) return;
+  badge.className = 'sync-badge sync-' + state;
+  dot.className = 'sync-dot ' + (state==='ok'?'sdot-ok':state==='err'?'sdot-err':'sdot-pend');
+  txt.textContent = text;
+}
+
+/* ════════════════════════════════════════
+   CLIENT CHECKLIST (rendered)
+════════════════════════════════════════ */
+const CL = [
+  {title:'⛩️ Afterlife Arrangement',items:[
+    {id:'cp-niche',lbl:'Columbarium niche at Nirvana Memorial Garden',sub:'Pre-arranged resting place',tag:'🔥 Critical'},
+    {id:'cp-funeral',lbl:'Funeral service package pre-arranged',sub:'Removes 30+ family decisions',tag:'🔥 Critical'},
+    {id:'cp-qingming',lbl:'Qingming festival package',sub:'Annual ceremony at Nirvana',tag:'Important'},
+  ]},
+  {title:'⚖️ Legal & Will',items:[
+    {id:'cp-will',lbl:'Valid will drafted',sub:'2 non-beneficiary witnesses',tag:'Priority'},
+    {id:'cp-lpa',lbl:'LPA registered with OPG',sub:'opg.gov.sg',tag:'Priority'},
+    {id:'cp-amd',lbl:'AMD / Organ donation registered',sub:'MOH',tag:'Optional'},
+  ]},
+  {title:'💰 CPF & Finance',items:[
+    {id:'cp-cpf',lbl:'CPF nomination updated',sub:'Invalid after marriage/divorce',tag:'Priority'},
+    {id:'cp-insurance',lbl:'Life insurance with beneficiaries',sub:'All policies reviewed',tag:'Important'},
+  ]},
+  {title:'💻 Digital',items:[
+    {id:'cp-digital',lbl:'Digital accounts documented',sub:'Email, social, banking, crypto',tag:'Important'},
+  ]},
 ];
-let qIdx=0,qScore=0,qAns=[];
-const maxScore=Qs.reduce((a,q)=>a+Math.max(...q.opts.map(o=>o.p)),0);
 
-function renderQ(){
-  const q=Qs[qIdx];
-  document.getElementById('qLabel').textContent='Question '+(qIdx+1)+' of '+Qs.length;
-  document.getElementById('qScorePrev').textContent='Score so far: '+Math.round(qScore)+'%';
-  document.getElementById('qProg').style.width=Math.round((qIdx/Qs.length)*100)+'%';
-  let h='<div class="quiz-q">'+q.q+'</div><div class="quiz-hint">'+q.hint+'</div><div class="quiz-opts">';
-  q.opts.forEach((o,i)=>h+='<div class="qopt'+(qAns[qIdx]===i?' sel':'')+'" onclick="qSel('+i+')"><div class="qopt-ico">'+o.i+'</div><div class="qopt-txt">'+o.t+'</div><div class="qopt-radio"></div></div>');
-  h+='</div><div class="quiz-nav">';
-  if(qIdx>0)h+='<button class="qbtn back" onclick="qPrev()">← Back</button>';
-  h+='<button class="qbtn next" style="'+(qIdx===0?'width:100%':'')+'" onclick="qNext()">'+(qIdx===Qs.length-1?'See My Score →':'Next →')+'</button></div>';
-  document.getElementById('qBox').innerHTML=h;
-}
-
-function qSel(i){
-  qAns[qIdx]=i;
-  document.querySelectorAll('.qopt').forEach((o,idx)=>o.classList.toggle('sel',idx===i));
-}
-function qNext(){
-  if(qAns[qIdx]===undefined)qAns[qIdx]=0;
-  qScore=0;
-  Qs.forEach((q,i)=>{if(qAns[i]!==undefined)qScore+=q.opts[qAns[i]].p});
-  qScore=Math.round((qScore/maxScore)*100);
-  if(qIdx<Qs.length-1){qIdx++;renderQ();}
-  else{showQResult();}
-}
-function qPrev(){if(qIdx>0){qIdx--;renderQ();}}
-function showQResult(){
-  const c=qScore<40?'var(--coral)':qScore<70?'var(--gold)':'var(--jade)';
-  const v=qScore<40?'Critical — major gaps found':qScore<70?'Moderate — important gaps remain':'Good — a few items to complete';
-  document.getElementById('qBox').innerHTML=`
-    <div class="quiz-result">
-      <div style="font-size:44px;margin-bottom:14px">📊</div>
-      <div style="font-family:var(--fh);font-size:20px;font-weight:800;margin-bottom:6px">Your Readiness Score</div>
-      <div style="font-size:13px;color:var(--ink3);opacity:0.6;margin-bottom:20px;line-height:1.5">Based on your answers. Lee has been notified and will reach out.</div>
-      <svg width="130" height="130" viewBox="0 0 130 130" style="transform:rotate(-90deg);display:block;margin:0 auto">
-        <circle cx="65" cy="65" r="55" fill="none" stroke="rgba(0,0,0,0.07)" stroke-width="10"/>
-        <circle cx="65" cy="65" r="55" fill="none" stroke="${c}" stroke-width="10" stroke-dasharray="345" stroke-dashoffset="${Math.round(345*(1-qScore/100))}" stroke-linecap="round"/>
-      </svg>
-      <div style="font-family:var(--fh);font-size:52px;font-weight:800;color:${c};margin:14px 0 4px">${qScore}%</div>
-      <div style="font-size:13px;color:var(--ink3);opacity:0.5;margin-bottom:24px">${v}</div>
-      <button class="sticky-cta-btn" style="margin-bottom:10px" onclick="cshow('gaps')">See My Full Gap Report →</button>
-      <button class="btn btn-gold btn-w" style="padding:13px" onclick="cshow('contact')">📱 Talk to Lee</button>
+function renderClientChecklist() {
+  const el = document.getElementById('c-cl-container'); if(!el) return;
+  el.innerHTML = CL.map(sec => {
+    const tot = sec.items.length;
+    const done = sec.items.filter(it => { const e=document.getElementById(it.id); return e&&e.checked; }).length;
+    return `<div style="background:var(--W);border-radius:var(--br2);border:1.5px solid var(--a3);overflow:hidden;margin-bottom:12px">
+      <div style="padding:12px 16px;border-bottom:1px solid var(--a2);display:flex;justify-content:space-between;align-items:center"><div style="font-family:var(--fh);font-size:13px;font-weight:700">${sec.title}</div><div style="font-size:12px;font-weight:600;color:${done===tot?'var(--j)':done>0?'var(--g)':'var(--a3)'}">${done}/${tot}</div></div>
+      ${sec.items.map(it=>{
+        const chk=document.getElementById(it.id)?.checked||false;
+        return`<div style="display:flex;align-items:flex-start;gap:11px;padding:12px 16px;border-bottom:1px solid var(--a2);cursor:pointer;transition:background .1s" onclick="toggleCLItem('${it.id}')" onmouseover="this.style.background='var(--a)'" onmouseout="this.style.background=''">
+          <div style="width:20px;height:20px;border-radius:5px;border:2px solid ${chk?'var(--j)':'var(--a3)'};background:${chk?'var(--j)':'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .2s">${chk?'<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,8 8,2" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>':''}</div>
+          <div style="flex:1"><div style="font-size:13px;color:var(--k);${chk?'text-decoration:line-through;opacity:.35':''}">${it.lbl}</div><div style="font-size:11px;color:var(--k3);opacity:.5;margin-top:2px">${it.sub}</div></div>
+          <div style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;${chk?'background:var(--jl);color:var(--j)':it.tag.includes('Critical')?'background:var(--rl);color:var(--r)':'background:var(--gl);color:var(--gd)'}">${chk?'✓ Done':it.tag}</div>
+        </div>`;
+      }).join('')}
     </div>`;
+  }).join('');
 }
-renderQ();
+
+function toggleCLItem(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.checked = !el.checked;
+  renderClientChecklist();
+  renderClientGaps();
+  recalcClient();
+  scheduleSync();
+}
+
+/* ════════════════════════════════════════
+   CLIENT GAPS (rendered)
+════════════════════════════════════════ */
+const GAPS = [
+  {id:'cp-niche',i:'⛩️',lv:'c',n:'No Columbarium Niche Secured',w:'Family won\'t know where to bring your remains.',det:'Over 80% of Singaporeans are cremated. Without a pre-arranged niche, family faces urgency, higher costs, and difficult decisions while grieving. Pre-arranging at Nirvana locks in today\'s price and reserves your preferred spot.',btn:'📱 Ask About Niches'},
+  {id:'cp-funeral',i:'⚰️',lv:'c',n:'No Funeral Service Package',w:'30+ decisions needed in 48 hours when family is devastated.',det:'A pre-arranged package removes every funeral decision. One phone call, everything handled at the price you locked in today.',btn:'📱 Ask About Funeral Packages'},
+  {id:'cp-cpf',i:'📋',lv:'h',n:'CPF Nomination Not Updated',w:'CPF cannot go through your will — CPF Board decides.',det:'CPF is separate from your will. Only nominated beneficiaries receive it. Without a nomination, CPF distributes under Intestate Succession Act. Nomination becomes invalid after marriage/divorce.',btn:'💬 Ask About CPF'},
+  {id:'cp-lpa',i:'⚖️',lv:'h',n:'No LPA Registered',w:'Family has no legal authority if you lose mental capacity.',det:'An LPA appoints someone to manage your finances and welfare decisions. Without one, family applies to court — costly, takes months. Register at opg.gov.sg for S$75.',btn:'💬 Ask About LPA'},
+  {id:'cp-will',i:'📜',lv:'h',n:'No Valid Will',w:'State determines your estate without a will.',det:'A will ensures your assets go to who you choose. Without one, Singapore\'s Intestate Succession Act applies — which may not match your wishes.',btn:'💬 Ask About Will Planning'},
+  {id:'cp-digital',i:'💻',lv:'m',n:'Digital Assets Not Documented',w:'Family may be locked out of bank apps, crypto, social accounts.',det:'When you pass, digital life doesn\'t disappear. Social accounts stay active, subscriptions keep charging, banking apps lock. A simple list of accounts and instructions is one of the most valuable things you can leave.',btn:'💬 Ask for Guidance'},
+];
+
+function renderClientGaps() {
+  const el = document.getElementById('c-gap-container'); if(!el) return;
+  const active = GAPS.filter(g => !document.getElementById(g.id)?.checked);
+  const done = GAPS.filter(g => document.getElementById(g.id)?.checked);
+  const lbg={c:'#FFF5F4',h:'#FFFBF0',m:'#F2F9F6'},lbr={c:'#F5C4BE',h:'#F0DFA0',m:'#B2DDD0'};
+  const lbl={c:'🔥 Critical',h:'⚑ High',m:'● Medium'};
+
+  const card = (g, isDone) => isDone ?
+    `<div style="border-radius:16px;border:1.5px solid var(--a3);padding:15px;margin-bottom:10px;background:var(--a);cursor:pointer" onclick="this.querySelector('.gex').style.display=this.querySelector('.gex').style.display==='block'?'none':'block'">
+      <div style="display:flex;align-items:center;gap:11px"><div style="font-size:22px">${g.i}</div><div style="flex:1"><div style="font-size:10px;font-weight:700;color:var(--j);text-transform:uppercase;margin-bottom:2px">✓ Settled</div><div style="font-family:var(--fh);font-size:13px;font-weight:700;text-decoration:line-through;opacity:.35">${g.n}</div></div></div>
+      <div class="gex" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid rgba(0,0,0,.07);font-size:13px;color:var(--j)">Great — keep documents current and ensure your family knows where to find them.</div>
+    </div>` :
+    `<div style="border-radius:16px;border:1.5px solid ${lbr[g.lv]};padding:15px;margin-bottom:10px;background:${lbg[g.lv]};cursor:pointer" onclick="this.querySelector('.gex').style.display=this.querySelector('.gex').style.display==='block'?'none':'block'">
+      <div style="display:flex;align-items:center;gap:11px"><div style="font-size:22px">${g.i}</div><div style="flex:1"><div style="font-size:10px;font-weight:700;color:${g.lv==='c'?'var(--r)':g.lv==='h'?'#9A7200':'var(--j)'};text-transform:uppercase;margin-bottom:2px">${lbl[g.lv]}</div><div style="font-family:var(--fh);font-size:13px;font-weight:700;color:var(--k)">${g.n}</div></div><div style="font-size:15px;color:rgba(0,0,0,.18)">›</div></div>
+      <div style="font-size:12px;color:var(--k3);line-height:1.45;margin-top:7px;opacity:.7">${g.w}</div>
+      <div class="gex" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid rgba(0,0,0,.07)">
+        <div style="font-size:13px;color:var(--k3);line-height:1.6;margin-bottom:12px">${g.det}</div>
+        <button style="width:100%;padding:11px;border-radius:var(--br);font-family:var(--fh);font-size:13px;font-weight:700;cursor:pointer;border:none;background:${g.lv==='c'?'var(--r)':g.lv==='h'?'var(--g)':'var(--j)'};color:${g.lv==='h'?'var(--k2)':'#fff'}" onclick="cGo('contact')">${g.btn}</button>
+      </div>
+    </div>`;
+
+  el.innerHTML = active.map(g=>card(g,false)).join('') +
+    (done.length ? '<div style="font-family:var(--fh);font-size:13px;font-weight:700;color:var(--j);margin:14px 0 10px">✓ Already settled</div>' : '') +
+    done.map(g=>card(g,true)).join('');
+}
+
+/* ════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════ */
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id)?.classList.add('active');
+}
+
+function aGo(id) {
+  document.querySelectorAll('.ascreen').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.sb-item').forEach(n=>n.classList.remove('on'));
+  document.getElementById('as-'+id)?.classList.add('on');
+  document.querySelectorAll('.sb-item').forEach(n=>{if((n.getAttribute('onclick')||'').includes("'"+id+"'"))n.classList.add('on');});
+  document.querySelector('.agent-main')?.scrollTo(0,0);
+}
+
+function cGo(id) {
+  document.querySelectorAll('#view-client .scr').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('cs-'+id)?.classList.add('on');
+  document.querySelectorAll('.ctab').forEach(t=>{if((t.getAttribute('onclick')||'').includes("'"+id+"'"))t.classList.add('on');});
+  document.getElementById('clientScrollBody')?.scrollTo(0,0);
+  if(id==='checklist'){renderClientChecklist();}
+  if(id==='gaps'){renderClientGaps();}
+}
+
+function openClientView() { showView('client'); loadClientData(); }
+
+/* ════════════════════════════════════════
+   WHATSAPP
+════════════════════════════════════════ */
+function copyMyLink() {
+  const url = document.getElementById('myShareLink')?.textContent || '';
+  if(navigator.clipboard) navigator.clipboard.writeText('https://'+url).then(()=>toast2('✓ Link copied!'));
+  else toast2('Link: https://'+url);
+}
+
+function shareWA() {
+  if(!currentAgent) return;
+  const link = `peaceout.sg/assess?agent=${currentAgent.agent_code}`;
+  const text = encodeURIComponent(`Hi! I'm ${currentAgent.full_name.split(' ')[0]} from Awesome 313 Agency. 👋\n\nFree 5-min readiness check — see exactly what gaps your family might face:\nhttps://${link}\n\nHappy to walk through the results! 😊`);
+  window.open('https://wa.me/?text='+text,'_blank');
+}
+
+function copyWATemplate() {
+  const t = document.getElementById('waTemplate')?.textContent||'';
+  if(navigator.clipboard) navigator.clipboard.writeText(t).then(()=>toast2('✓ Message copied!'));
+}
+
+function waLead(name, score, msg) {
+  const text = encodeURIComponent(`Hi ${name}! I'm reaching out after you completed the PeaceOut.sg readiness assessment.\n\nYour score: ${score}%\n\nI'd love to help you close the gaps and protect your family. When would be a good time to chat?`);
+  const mobile = currentAgent?.mobile?.replace(/\D/g,'') || '';
+  window.open('https://wa.me/'+mobile+'?text='+text,'_blank');
+}
+
+function clientWA() {
+  const reason = document.getElementById('c-reason')?.value || 'afterlife planning';
+  const msg = document.getElementById('c-msg')?.value || '';
+  const score = document.getElementById('c-sn')?.textContent || '?';
+  const name = currentClientData?.full_name || currentUser?.user_metadata?.full_name || 'Client';
+  const text = encodeURIComponent(`Hi! I completed the PeaceOut.sg readiness assessment.\n\nName: ${name}\nScore: ${score}\nI'd like to ask about: ${reason}${msg?'\n\n'+msg:''}`);
+  const agentMobile = currentClientData?.agents?.mobile?.replace(/\D/g,'') || '6591234567';
+  window.open('https://wa.me/'+agentMobile+'?text='+text,'_blank');
+}
+
+/* ════════════════════════════════════════
+   MISC HELPERS
+════════════════════════════════════════ */
+function filterClients() {
+  const q = document.getElementById('clientSearch')?.value.toLowerCase();
+  document.querySelectorAll('#clientsTableBody tr').forEach(tr=>{
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+async function signOut() {
+  await sb.auth.signOut();
+  currentUser = null; currentAgent = null; currentClientData = null;
+  showView('auth');
+  toast2('Signed out');
+}
+
+function doConfetti() {
+  const ov=document.getElementById('cov');if(!ov)return;
+  const cols=['#C9A84C','#1D7A5F','#FF6B6B','#4FC3F7','#FFD700'];
+  for(let i=0;i<28;i++){
+    const el=document.createElement('div');el.className='cp';
+    el.style.cssText=`left:${15+Math.random()*70}%;top:0;background:${cols[i%5]};animation-delay:${Math.random()*.5}s;animation-duration:${1.2+Math.random()*.6}s;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'2px'}`;
+    ov.appendChild(el);setTimeout(()=>el.remove(),2200);
+  }
+}
+
+function mobileToEmail(mobile) {
+  const clean = mobile.replace(/\D/g,'').replace(/^65/,'').replace(/^0/,'');
+  return `sg${clean}@peaceout-client.com`;
+}
+
+function setLoading(btnId, loading) {
+  const btn = document.getElementById(btnId);
+  if(!btn) return;
+  btn.disabled = loading;
+  btn.innerHTML = loading ? '<span class="spin"></span> Please wait...' : btn.getAttribute('data-original') || btn.textContent;
+  if(!loading && !btn.getAttribute('data-original')) btn.setAttribute('data-original', btn.textContent);
+}
+
+let tTimer;
+function toast2(msg, dur=2500) {
+  const el=document.getElementById('toast');if(!el)return;
+  el.textContent=msg;el.classList.add('on');
+  clearTimeout(tTimer);tTimer=setTimeout(()=>el.classList.remove('on'),dur);
+}
 </script>
 </body>
 </html>
